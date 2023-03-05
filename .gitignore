@@ -1,4 +1,4 @@
 ./.build
-./build_commands.json
+./compile_commands.json
 ./.cache
 
