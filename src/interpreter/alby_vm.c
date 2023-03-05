@@ -11,7 +11,7 @@
 
 int alby_vm(const char *filename) {
   if (strstr(filename, ".lsd") == NULL) {
-    fprintf(stderr, "file '%s' is not correct format!", filename);
+    fprintf(stderr, "file '%s' is not correct format!\n", filename);
     return 1;
   }
 

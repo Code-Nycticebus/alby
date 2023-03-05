@@ -15,8 +15,11 @@ static const char *shift(int *argc, const char ***argv) {
 }
 
 static void usage(FILE *output, const char *program) {
-  fprintf(output, "Usage: %s <file> [-r, -c, -d] [output]", program);
-  fprintf(output, "\n");
+  fprintf(output, "Usage: %s <file> [-r, -c, -d] [output_file]\n", program);
+}
+
+static void help(FILE *output, const char *program) {
+  usage(output, program);
   fprintf(output, "<file>,   Input file\n");
   fprintf(output, "Optional\n");
   fprintf(output, "  Tools:\n");
@@ -37,17 +40,28 @@ static void usage_error(const char *program, const char *msg,
 int main(int argc, const char **argv) {
   const char *program = shift(&argc, &argv);
   if (argc < 1) {
-    usage_error(program, "Not enough arguments provided", "Tool");
+    usage_error(program, "Not enough arguments provided", "first");
+    return 1;
   }
 
   const char *input_file = shift(&argc, &argv);
+  if (input_file[0] == '-') {
+    if (input_file[1] == 'h') {
+      help(stdout, program);
+      return 0;
+    }
+    usage_error(program, "Expected a <file> argument", input_file);
+    return -1;
+  }
+
   printf("FILE: %s\n", input_file);
   const char *option = shift(&argc, &argv);
   if (option == NULL) {
     option = "-r";
   }
   if (option[0] != '-') {
-    usage_error(program, "Expected a - argument", option);
+    usage_error(program, "Expected a <-[a-Z]> argument", option);
+    return -1;
   }
 
   switch (option[1]) {
