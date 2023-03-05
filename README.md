@@ -8,10 +8,10 @@ I use my own buildsystem to build this.
 ## Quickstart
 
 ### pybuildc
-´´´bash
+```bash
 pybuildc build --release
 .build/bin/alby examples/fib.ergot -c
 .build/bin/alby fib.lsd -r
-´´´
+```
 
 
