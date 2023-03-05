@@ -1,0 +1,6 @@
+mov r1, 80
+mov r2, 500
+sub r2, r1
+
+debug
+exit 0

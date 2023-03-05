@@ -1,0 +1,6 @@
+[project]
+name = "alby"
+version = "0.0.1"
+cc = "gcc"
+
+[dependencies]
