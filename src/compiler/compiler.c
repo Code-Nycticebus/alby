@@ -17,8 +17,11 @@ int compile(const char *filename) {
   }
   fclose(input);
 
-  CpuInstruction program[10] = {0};
-  const size_t program_size = 1;
+  CpuInstruction program[] = {
+      cpu_inst_debug(),
+      cpu_inst_exit(0),
+  };
+  const size_t program_size = 2;
 
   FILE *output = fopen("main.lsd", "wb");
   if (output == NULL) {

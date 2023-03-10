@@ -54,7 +54,6 @@ int main(int argc, const char **argv) {
     return -1;
   }
 
-  printf("FILE: %s\n", input_file);
   const char *option = shift(&argc, &argv);
   if (option == NULL) {
     option = "-r";
