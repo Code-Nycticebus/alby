@@ -3,7 +3,7 @@ mov r2, 0  # a = 0
 mov r3, 1  # b = 1
 
 # :loop_start
-cmp r1, 12 # i < 10
+cmp r1, 10 # i < 10
 jge 11     # == loop_end 
 
 mov r4, r2 # tmp = a

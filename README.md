@@ -9,8 +9,8 @@ I use my own buildsystem to build this.
 
 ### pybuildc
 ```terminal
-pybuildc run --release examples/fib.ergot -c
-pybuildc run --release fib.lsd -r
+pybuildc run --release examples/fib.lsd -c ./fib
+pybuildc run --release ./fib
 ```
 
 
