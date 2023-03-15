@@ -10,6 +10,7 @@ typedef enum TokenKind {
   TOKEN_SYMBOL,
   // Keywords
   TOKEN_SYSCALL,
+  TOKEN_EXIT,
 
   TOKEN_MOV,
   TOKEN_PUSH,

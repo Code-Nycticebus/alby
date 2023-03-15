@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdbool.h>
 #include <stddef.h>
 
 #include "token.h"
@@ -14,6 +15,8 @@ typedef struct Lexer {
 } Lexer;
 
 const char *token_kind_to_string(TokenKind kind);
+
+bool token_is_register(TokenKind kind);
 
 // Creates lexer generator that wraps around the content
 Lexer lexer_init(size_t size, const char *content);

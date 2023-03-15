@@ -14,12 +14,10 @@ static const char *input[] = {
     "mov r2, 80\n"
     "sub r1, r2\n",
     // Small program 2
-    "mov r1, 34\n"
-    "add r1, 35",
-    // Syscall
-    "mov r1, 0\n"
-    "syscall exit",
+    "mov r1, 34\n add r1, 35\n",
 
+    // Syscall
+    "exit 0\n",
     // Ambitions
     "i64 a = 420\n", // -> push 420
 };

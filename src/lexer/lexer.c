@@ -37,6 +37,12 @@ Lexer lexer_init(size_t size, const char *content) {
   };
 }
 
+bool token_is_register(TokenKind kind) {
+  assert(TOKEN_REGISTER_SP - TOKEN_REGISTER_1 == 8 &&
+         "Number of registers has updated!");
+  return (TOKEN_REGISTER_1 <= kind && kind <= TOKEN_REGISTER_8);
+}
+
 #define TOKEN_KIND_TO_STRING(token)                                            \
   case token:                                                                  \
     return #token
@@ -47,6 +53,7 @@ const char *token_kind_to_string(TokenKind kind) {
     TOKEN_KIND_TO_STRING(TOKEN_SYMBOL);
 
     TOKEN_KIND_TO_STRING(TOKEN_SYSCALL);
+    TOKEN_KIND_TO_STRING(TOKEN_EXIT);
 
     TOKEN_KIND_TO_STRING(TOKEN_MOV);
     TOKEN_KIND_TO_STRING(TOKEN_PUSH);

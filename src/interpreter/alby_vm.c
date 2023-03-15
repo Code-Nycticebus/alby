@@ -10,10 +10,6 @@
 #include "../interpreter/cpu/cpu_inst.h"
 
 int alby_vm(const char *filename) {
-  if (strstr(filename, ".lsd") == NULL) {
-    fprintf(stderr, "file '%s' is not correct format!\n", filename);
-    return 1;
-  }
 
   FILE *input = fopen(filename, "rb");
 
@@ -46,6 +42,5 @@ int alby_vm(const char *filename) {
   fclose(input);
 
   Cpu cpu = {0};
-  cpu_run_program(&cpu, program);
-  return 0;
+  return cpu_run_program(&cpu, program);
 }

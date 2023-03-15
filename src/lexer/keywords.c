@@ -17,6 +17,7 @@ static const struct {
     // Keywords
 
     {TOKEN_SYSCALL, LEN_STR("syscall")},
+    {TOKEN_EXIT, LEN_STR("exit")},
 
     {TOKEN_MOV, LEN_STR("mov")},
     {TOKEN_PUSH, LEN_STR("push")},

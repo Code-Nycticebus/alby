@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../../src/compiler/parser.h"
-
 #include "../../src/lexer/lexer.h"
 #include "../../src/lexer/token.h"
 
@@ -14,6 +12,7 @@
 #define PROGRAM_MAX 100
 
 typedef struct ParserError {
+  const char *msg;
   size_t line;
   const char *bol;
   Token tk;
@@ -35,6 +34,8 @@ static void _display_line(const char *bol) {
 }
 
 static void parser_error_display(ParserError *err) {
+  printf("src/from_memory.ergot:%ld:\n", err->line);
+  printf("%s\n", err->msg);
   _display_line(err->bol);
   printf("%*c%*c\n", (int)(err->tk.token - err->bol), ' ', (int)err->tk.len,
          '^');
@@ -56,13 +57,15 @@ static CpuInstruction parse_mov(Lexer *lexer) {
 
   if (!(TOKEN_REGISTER_1 <= op1.kind && op1.kind <= TOKEN_REGISTER_8)) {
     ParserError err = {
-        .tk = op1, .bol = &lexer->content[lexer->bol], .line = lexer->line};
+        .msg = "The first operant has to be a register.",
+        .tk = op1,
+        .bol = &lexer->content[lexer->bol],
+        .line = lexer->line,
+    };
     parser_error_display(&err);
     exit(1);
   }
 
-  assert(TOKEN_REGISTER_1 <= op1.kind && op1.kind <= TOKEN_REGISTER_SB &&
-         "First operant has to be a register");
   Token comma = lexer_next(lexer);
   assert(comma.kind == TOKEN_DEL_COMMA && "Missing comma delimiter");
   Token op2 = lexer_next(lexer);
@@ -124,8 +127,9 @@ static int run_program(CpuInstruction *program) {
 }
 
 int main(void) {
-  const char str[] = "mov 2, 34\n"
-                     "add 2, 35\n";
+  const char str[] = "mov r2, 34\n"
+                     "add r2, 35\n"
+                     "mov 3, 34\n";
 
   Program program = {0};
 

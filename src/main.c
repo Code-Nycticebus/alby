@@ -23,7 +23,7 @@ static void help(FILE *output, const char *program) {
   fprintf(output, "<file>,   Input file\n");
   fprintf(output, "Optional\n");
   fprintf(output, "  Tools:\n");
-  fprintf(output, "    -r,    Runs bytecode file (default) (NOT IMPL)\n");
+  fprintf(output, "    -r,    Runs bytecode file (default)\n");
   fprintf(output, "    -c,    Compiles into bytecode (NOT IMPLEMENTED)\n");
   fprintf(output, "    -d,    Disassembles bytecode (NOT IMPLEMENTED)\n");
   fprintf(output, "  output,  Specifies the output name (NOT IMPLEMENTED)\n");
@@ -59,13 +59,19 @@ int main(int argc, const char **argv) {
     option = "-r";
   }
   if (option[0] != '-') {
-    usage_error(program, "Expected a <-[a-Z]> argument", option);
+    usage_error(program, "Expected argument like: -c -d -f", option);
     return -1;
   }
 
   switch (option[1]) {
-  case 'c':
-    return compile(input_file);
+  case 'c': {
+    const char *output_file = shift(&argc, &argv);
+    if (!output_file) {
+      usage_error(program, "Expected an output file, but none was provided",
+                  "output");
+    }
+    return compile(input_file, output_file);
+  }
   case 'd':
     assert(0 && "NOT IMPLEMENTED");
     break;
