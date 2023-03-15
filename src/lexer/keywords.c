@@ -20,6 +20,7 @@ static const struct {
     {TOKEN_EXIT, LEN_STR("exit")},
 
     {TOKEN_MOV, LEN_STR("mov")},
+    {TOKEN_SMOV, LEN_STR("smov")},
     {TOKEN_PUSH, LEN_STR("push")},
     {TOKEN_POP, LEN_STR("pop")},
 

@@ -32,7 +32,7 @@ Lexer lexer_init(size_t size, const char *content) {
       .content = content,
       .size = size,
       .cursor = 0,
-      .line = 0,
+      .line = 1, // Why not just start from line one?
       .bol = 0,
   };
 }
@@ -56,6 +56,7 @@ const char *token_kind_to_string(TokenKind kind) {
     TOKEN_KIND_TO_STRING(TOKEN_EXIT);
 
     TOKEN_KIND_TO_STRING(TOKEN_MOV);
+    TOKEN_KIND_TO_STRING(TOKEN_SMOV);
     TOKEN_KIND_TO_STRING(TOKEN_PUSH);
     TOKEN_KIND_TO_STRING(TOKEN_POP);
 
@@ -103,6 +104,7 @@ const char *token_kind_to_string(TokenKind kind) {
     TOKEN_KIND_TO_STRING(TOKEN_REGISTER_SB);
 
     TOKEN_KIND_TO_STRING(TOKEN_DEBUG);
+    TOKEN_KIND_TO_STRING(TOKEN_COMMENT);
 
     TOKEN_KIND_TO_STRING(TOKEN_INVALID);
   }
@@ -149,11 +151,28 @@ Token lexer_next(Lexer *l) {
     l->bol = ++l->cursor;
 
     return (Token){
-        .kind = TOKEN_DEL_NEWLINE, .token = &l->content[l->cursor], .len = 1};
+        .kind = TOKEN_DEL_NEWLINE,
+        .token = &l->content[l->cursor],
+        .len = 1,
+    };
   }
   // Endpoint check
   if (!(l->cursor < l->size)) {
     return (Token){.kind = TOKEN_EOF};
+  }
+
+  // Comments
+  if (current == '#') {
+    Token tk = {
+        .kind = TOKEN_COMMENT,
+        .token = &l->content[l->cursor],
+        .len = 0,
+    };
+    while (lexer_char_get(l) != '\n') {
+      tk.len++;
+      lexer_char_step(l);
+    }
+    return tk;
   }
 
   // symbol handling

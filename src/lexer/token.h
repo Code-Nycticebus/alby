@@ -13,6 +13,7 @@ typedef enum TokenKind {
   TOKEN_EXIT,
 
   TOKEN_MOV,
+  TOKEN_SMOV,
   TOKEN_PUSH,
   TOKEN_POP,
 
@@ -67,6 +68,8 @@ typedef enum TokenKind {
   TOKEN_REGISTER_SB,
 
   TOKEN_DEBUG,
+
+  TOKEN_COMMENT,
   TOKEN_INVALID = -1,
 } TokenKind;
 

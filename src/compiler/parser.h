@@ -9,6 +9,7 @@
 
 typedef struct Parser {
   bool eof;
+
   const char *filename;
   Lexer lexer;
 } Parser;

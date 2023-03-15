@@ -2,7 +2,6 @@ mov r1, 0  # i = 0
 mov r2, 0  # a = 0
 mov r3, 1  # b = 1
 
-
 # :loop_start
 cmp r1, 12 # i < 10
 jge 11     # == loop_end 
@@ -12,7 +11,6 @@ add r4, r3 # tmp += b
 
 mov r2, r3 # a = b
 mov r3, r4 # b = tmp
-
 
 
 add r1, 1  # i++

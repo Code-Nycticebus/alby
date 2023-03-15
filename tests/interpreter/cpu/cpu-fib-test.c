@@ -5,7 +5,7 @@
 #include "../../../src/interpreter/cpu/cpu_inst.h"
 #define loop_start 3
 #define loop_end 12
-#define program_size 17
+#define program_size 15
 
 enum Variables {
   a = 0,
@@ -37,9 +37,7 @@ int main(void) {
       cpu_inst_jmp(loop_start),  // jmp loop_start
                                  // :loop_end
 
-      // Cleans the stack
-      cpu_inst_pop(CPU_R8),
-      cpu_inst_pop(CPU_R8),
+      // TODO Clean the stack
 
       cpu_inst_pushr(CPU_R2), // push r2 # Pushes result on the stack
       cpu_inst_debug(),

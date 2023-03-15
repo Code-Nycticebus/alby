@@ -63,7 +63,7 @@ static CpuInstruction parse_mov(Lexer *lexer) {
         .line = lexer->line,
     };
     parser_error_display(&err);
-    exit(1);
+    exit(0);
   }
 
   Token comma = lexer_next(lexer);
