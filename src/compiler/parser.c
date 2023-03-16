@@ -73,6 +73,10 @@ static ParserResult parse_smov(Parser *parser) {
     return ResultOk(
         cpu_inst_smovi(parse_u64(offset), parse_u64(second_operant)));
   }
+  if (second_operant.kind == TOKEN_SYMBOL) {
+    return ResultErr(parser_error(parser, second_operant,
+                                  "Datasizes are not impemented yet!"));
+  }
 
   return ResultErr(parser_error(
       parser, second_operant,
@@ -104,6 +108,10 @@ static ParserResult parse_mov(Parser *parser) {
   if (second_operant.kind == TOKEN_LIT_I64) {
     return ResultOk(cpu_inst_movi(first_operant.kind - TOKEN_REGISTER_1,
                                   parse_u64(second_operant)));
+  }
+  if (second_operant.kind == TOKEN_SYMBOL) {
+    return ResultErr(parser_error(parser, second_operant,
+                                  "Datatypes are not impemented yet!"));
   }
 
   return ResultErr(parser_error(
