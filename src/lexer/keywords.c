@@ -20,7 +20,6 @@ static const struct {
     {TOKEN_EXIT, LEN_STR("exit")},
 
     {TOKEN_MOV, LEN_STR("mov")},
-    {TOKEN_SMOV, LEN_STR("smov")},
     {TOKEN_PUSH, LEN_STR("push")},
     {TOKEN_POP, LEN_STR("pop")},
 
@@ -48,7 +47,7 @@ static const struct {
     {TOKEN_REGISTER_7, LEN_STR("r7")},
     {TOKEN_REGISTER_8, LEN_STR("r8")},
     {TOKEN_REGISTER_SP, LEN_STR("rsp")},
-    {TOKEN_REGISTER_SB, LEN_STR("rbp")},
+    {TOKEN_REGISTER_SB, LEN_STR("rsb")},
 
     {TOKEN_DEBUG, LEN_STR("debug")},
 };

@@ -9,9 +9,7 @@ typedef struct Cpu {
   int64_t zf;
   Word reg[CPU_R_COUNT];
 
-  size_t sp;
-  size_t sb;
-  Word stack[CPU_STACK_SIZE];
+  uint8_t stack[CPU_STACK_SIZE];
 } Cpu;
 
 int cpu_run_program(Cpu *cpu, const CpuInstruction *program);

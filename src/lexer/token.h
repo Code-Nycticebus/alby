@@ -13,7 +13,6 @@ typedef enum TokenKind {
   TOKEN_EXIT,
 
   TOKEN_MOV,
-  TOKEN_SMOV,
   TOKEN_PUSH,
   TOKEN_POP,
 
@@ -33,6 +32,10 @@ typedef enum TokenKind {
   TOKEN_OP_SUB,
   TOKEN_OP_MUL,
   TOKEN_OP_DIV,
+
+  /* === Punctuation === */
+  TOKEN_PUNCT_PLUS,
+  TOKEN_PUNCT_MINUS,
 
   /* === Delimiters === */
   TOKEN_DEL_SEMICOLON,

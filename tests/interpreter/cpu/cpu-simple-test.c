@@ -5,8 +5,8 @@
 #include "../../../src/interpreter/cpu/cpu_inst.h"
 
 enum Variables {
-  A = 0,
-  B,
+  A = sizeof(Word) * 0,
+  B = sizeof(Word) * 1,
 };
 
 const Word first = 35;

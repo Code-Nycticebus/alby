@@ -9,8 +9,8 @@
 #define program_size 14
 
 enum Variables {
-  a = 0,
-  b,
+  a = sizeof(Word) * 0,
+  b = sizeof(Word) * 1,
 };
 
 #define max_iterations 5

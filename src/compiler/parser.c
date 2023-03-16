@@ -35,14 +35,62 @@ static ParserResult parse_exit(Parser *parser) {
   return ResultOk(cpu_inst_exit(parse_u64(return_code)));
 }
 
+static ParserResult parse_smov(Parser *parser) {
+  Token reg = lexer_next(&parser->lexer);
+  if (reg.kind != TOKEN_REGISTER_SB) {
+    return ResultErr(
+        parser_error(parser, reg, "First operant has to be the rsb register"));
+  }
+  Token plus = lexer_next(&parser->lexer);
+  if (plus.kind != TOKEN_PUNCT_PLUS) {
+    return ResultErr(parser_error(parser, plus, "Expected a plus here!"));
+  }
+
+  Token offset = lexer_next(&parser->lexer);
+
+  if (offset.kind != TOKEN_LIT_I64) {
+    return ResultErr(
+        parser_error(parser, offset, "return code has to be an i64 literal!"));
+  }
+
+  Token end_addr = lexer_next(&parser->lexer);
+  if (end_addr.kind != TOKEN_DEL_RSQUARE) {
+    return ResultErr(
+        parser_error(parser, end_addr, "Expected closing bracket!"));
+  }
+
+  Token comma = lexer_next(&parser->lexer);
+  if (comma.kind != TOKEN_DEL_COMMA) {
+    return ResultErr(parser_error(parser, comma, "Expected a comma delimeter"));
+  }
+
+  Token second_operant = lexer_next(&parser->lexer);
+  if (token_is_register(second_operant.kind)) {
+    return ResultOk(cpu_inst_smovr(parse_u64(offset),
+                                   second_operant.kind - TOKEN_REGISTER_1));
+  }
+  if (second_operant.kind == TOKEN_LIT_I64) {
+    return ResultOk(
+        cpu_inst_smovi(parse_u64(offset), parse_u64(second_operant)));
+  }
+
+  return ResultErr(parser_error(
+      parser, second_operant,
+      "Second operant has to be an i64 literal, an address or a register"));
+}
+
 static ParserResult parse_mov(Parser *parser) {
   Token first_operant = lexer_next(&parser->lexer);
+
+  if (first_operant.kind == TOKEN_DEL_LSQUARE) {
+    return parse_smov(parser);
+  }
+
   if (!(TOKEN_REGISTER_1 <= first_operant.kind &&
         first_operant.kind <= TOKEN_REGISTER_8)) {
     return ResultErr(parser_error(parser, first_operant,
                                   "First operant has to be a register"));
   }
-
   Token comma = lexer_next(&parser->lexer);
   if (comma.kind != TOKEN_DEL_COMMA) {
     return ResultErr(parser_error(parser, comma, "Expected a comma delimeter"));
@@ -58,36 +106,9 @@ static ParserResult parse_mov(Parser *parser) {
                                   parse_u64(second_operant)));
   }
 
-  return ResultErr(
-      parser_error(parser, second_operant,
-                   "Second operant has to be a i64 literal or a register"));
-}
-
-static ParserResult parse_smov(Parser *parser) {
-  Token first_operant = lexer_next(&parser->lexer);
-  if (first_operant.kind != TOKEN_LIT_I64) {
-    return ResultErr(parser_error(parser, first_operant,
-                                  "First operant has to be a literal offset"));
-  }
-
-  Token comma = lexer_next(&parser->lexer);
-  if (comma.kind != TOKEN_DEL_COMMA) {
-    return ResultErr(parser_error(parser, comma, "Expected a comma delimeter"));
-  }
-
-  Token second_operant = lexer_next(&parser->lexer);
-  if (token_is_register(second_operant.kind)) {
-    return ResultOk(cpu_inst_smovr(parse_u64(first_operant),
-                                   second_operant.kind - TOKEN_REGISTER_1));
-  }
-  if (second_operant.kind == TOKEN_LIT_I64) {
-    return ResultOk(
-        cpu_inst_smovi(parse_u64(first_operant), parse_u64(second_operant)));
-  }
-
-  return ResultErr(
-      parser_error(parser, second_operant,
-                   "Second operant has to be a i64 literal or a register"));
+  return ResultErr(parser_error(
+      parser, second_operant,
+      "Second operant has to be an i64 literal, an address or a register"));
 }
 
 static ParserResult parse_add(Parser *parser) {
@@ -220,9 +241,6 @@ ParserResult parser_next(Parser *parser) {
 
   case TOKEN_MOV:
     return parse_mov(parser);
-
-  case TOKEN_SMOV:
-    return parse_smov(parser);
 
   case TOKEN_OP_ADD:
     return parse_add(parser);

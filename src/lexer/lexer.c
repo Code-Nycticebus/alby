@@ -22,6 +22,8 @@ static const struct {
     {TOKEN_DEL_LCURLY, '{'},    {TOKEN_DEL_RCURLY, '}'},
     {TOKEN_DEL_LSQUARE, '['},   {TOKEN_DEL_RSQUARE, ']'},
 
+    {TOKEN_PUNCT_PLUS, '+'},    {TOKEN_PUNCT_MINUS, '-'},
+
 };
 static const size_t punctuation_count =
     sizeof(punctuation) / sizeof(punctuation[0]);
@@ -38,9 +40,9 @@ Lexer lexer_init(size_t size, const char *content) {
 }
 
 bool token_is_register(TokenKind kind) {
-  assert(TOKEN_REGISTER_SP - TOKEN_REGISTER_1 == 8 &&
+  assert(TOKEN_REGISTER_SB - TOKEN_REGISTER_1 == 9 &&
          "Number of registers has updated!");
-  return (TOKEN_REGISTER_1 <= kind && kind <= TOKEN_REGISTER_8);
+  return (TOKEN_REGISTER_1 <= kind && kind <= TOKEN_REGISTER_SB);
 }
 
 #define TOKEN_KIND_TO_STRING(token)                                            \
@@ -56,7 +58,6 @@ const char *token_kind_to_string(TokenKind kind) {
     TOKEN_KIND_TO_STRING(TOKEN_EXIT);
 
     TOKEN_KIND_TO_STRING(TOKEN_MOV);
-    TOKEN_KIND_TO_STRING(TOKEN_SMOV);
     TOKEN_KIND_TO_STRING(TOKEN_PUSH);
     TOKEN_KIND_TO_STRING(TOKEN_POP);
 
@@ -74,6 +75,9 @@ const char *token_kind_to_string(TokenKind kind) {
     TOKEN_KIND_TO_STRING(TOKEN_OP_SUB);
     TOKEN_KIND_TO_STRING(TOKEN_OP_MUL);
     TOKEN_KIND_TO_STRING(TOKEN_OP_DIV);
+
+    TOKEN_KIND_TO_STRING(TOKEN_PUNCT_PLUS);
+    TOKEN_KIND_TO_STRING(TOKEN_PUNCT_MINUS);
 
     TOKEN_KIND_TO_STRING(TOKEN_DEL_SEMICOLON);
     TOKEN_KIND_TO_STRING(TOKEN_DEL_COLON);
@@ -162,7 +166,7 @@ Token lexer_next(Lexer *l) {
   }
 
   // Comments
-  if (current == '#') {
+  if (current == ';') {
     Token tk = {
         .kind = TOKEN_COMMENT,
         .token = &l->content[l->cursor],

@@ -23,7 +23,7 @@ static inline CpuError cpu_op_movr(Cpu *cpu, Register reg1, Register reg2) {
 
 static inline CpuError cpu_op_movs(Cpu *cpu, Register reg,
                                    size_t stack_offset) {
-  if (cpu->sp && cpu->sp < stack_offset) {
+  if (cpu->reg[CPU_RSP] && cpu->reg[CPU_RSP] < stack_offset) {
     return CPU_ERR_STACK_UNDERFLOW;
   }
   cpu->reg[reg] = cpu->stack[stack_offset];
@@ -31,10 +31,11 @@ static inline CpuError cpu_op_movs(Cpu *cpu, Register reg,
 }
 
 static inline CpuError cpu_op_pushi(Cpu *cpu, const Word value) {
-  if (cpu->sp >= CPU_STACK_SIZE) {
+  if (cpu->reg[CPU_RSP] >= CPU_STACK_SIZE) {
     return CPU_ERR_STACK_OVERFLOW;
   }
-  cpu->stack[cpu->sp++] = value;
+  *(Word *)&cpu->stack[cpu->reg[CPU_RSP]] = value;
+  cpu->reg[CPU_RSP] += sizeof(Word);
   return CPU_ERR_OK;
 }
 
@@ -43,10 +44,10 @@ static inline CpuError cpu_op_pushr(Cpu *cpu, const Register reg) {
 }
 
 static inline CpuError cpu_op_smovi(Cpu *cpu, size_t offset, const Word value) {
-  if (cpu->sp && cpu->sp < offset) {
+  if (cpu->reg[CPU_RSP] && cpu->reg[CPU_RSP] < offset) {
     return CPU_ERR_STACK_UNDERFLOW;
   }
-  cpu->stack[offset] = value;
+  *(Word *)&cpu->stack[offset] = value;
   return CPU_ERR_OK;
 }
 
@@ -56,10 +57,10 @@ static inline CpuError cpu_op_smovr(Cpu *cpu, size_t offset,
 }
 
 static inline CpuError cpu_op_pop(Cpu *cpu, Register reg) {
-  if (cpu->sp == 0) {
+  if (cpu->reg[CPU_RSP] == 0) {
     return CPU_ERR_STACK_UNDERFLOW;
   }
-  cpu->reg[reg] = cpu->stack[--cpu->sp];
+  cpu->reg[reg] = cpu->stack[--cpu->reg[CPU_RSP]];
   return CPU_ERR_OK;
 }
 

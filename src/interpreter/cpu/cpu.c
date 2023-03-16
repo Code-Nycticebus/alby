@@ -42,12 +42,22 @@ void cpu_dump(FILE *file, const Cpu *cpu) {
   }
 
   fprintf(file, "  Stack:\n");
-  if (cpu->sp) {
-    for (size_t i = 0; i < cpu->sp; ++i) {
-      fprintf(file, "    %3lu: ", cpu->sp - i - 1);
-      _dump_bytes(file, &cpu->stack[cpu->sp - i - 1]);
-      fprintf(file, " -> %lu \n", cpu->stack[cpu->sp - i - 1]);
+  if (cpu->reg[CPU_RSP]) {
+    for (size_t i = 0; i < cpu->reg[CPU_RSP] / sizeof(Word); ++i) {
+      printf("    ");
+      for (size_t bytes = 0; bytes < sizeof(Word); ++bytes) {
+        printf("%02x ",
+               cpu->stack[(i * sizeof(Word)) + sizeof(Word) - bytes - 1]);
+      }
+      printf(" |%3lu\n", i * sizeof(Word));
     }
+
+    printf("    ");
+    for (size_t i = 0; i < sizeof(Word) - cpu->reg[CPU_RSP] % sizeof(Word);
+         ++i) {
+      printf("   ");
+    }
+    printf("^");
   } else {
     fprintf(file, "    --- empty ---\n");
   }
