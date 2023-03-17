@@ -10,7 +10,9 @@ add rsp, 3
 
 mov [rsb + 8], 420
 
-mov [rsb + 9], u8 69
+mov [rsb + 16], 69
+
+
 
 debug
 exit 0

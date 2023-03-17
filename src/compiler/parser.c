@@ -7,6 +7,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define EXPECT_TOKEN(p, token, msg)                                            \
+  do {                                                                         \
+    Token t = lexer_next(&p->lexer);                                           \
+    if (t.kind != token) {                                                     \
+      return ResultErr(parser_error(p, t, msg));                               \
+    }                                                                          \
+  } while (0);
+
 static ParserError parser_error(const Parser *parser, const Token tk,
                                 const char *msg) {
   return (ParserError){
@@ -36,33 +44,17 @@ static ParserResult parse_exit(Parser *parser) {
 }
 
 static ParserResult parse_smov(Parser *parser) {
-  Token reg = lexer_next(&parser->lexer);
-  if (reg.kind != TOKEN_REGISTER_SB) {
-    return ResultErr(
-        parser_error(parser, reg, "First operant has to be the rsb register"));
-  }
-  Token plus = lexer_next(&parser->lexer);
-  if (plus.kind != TOKEN_PUNCT_PLUS) {
-    return ResultErr(parser_error(parser, plus, "Expected a plus here!"));
-  }
+  EXPECT_TOKEN(parser, TOKEN_REGISTER_SB, "Register has to be 'rsb'");
+  EXPECT_TOKEN(parser, TOKEN_PUNCT_PLUS, "Expected a '+' here");
 
   Token offset = lexer_next(&parser->lexer);
-
   if (offset.kind != TOKEN_LIT_I64) {
     return ResultErr(
         parser_error(parser, offset, "return code has to be an i64 literal!"));
   }
 
-  Token end_addr = lexer_next(&parser->lexer);
-  if (end_addr.kind != TOKEN_DEL_RSQUARE) {
-    return ResultErr(
-        parser_error(parser, end_addr, "Expected closing bracket!"));
-  }
-
-  Token comma = lexer_next(&parser->lexer);
-  if (comma.kind != TOKEN_DEL_COMMA) {
-    return ResultErr(parser_error(parser, comma, "Expected a comma delimeter"));
-  }
+  EXPECT_TOKEN(parser, TOKEN_DEL_RSQUARE, "Expected closing bracket");
+  EXPECT_TOKEN(parser, TOKEN_DEL_COMMA, "Expected comma delimiter");
 
   Token second_operant = lexer_next(&parser->lexer);
   if (token_is_register(second_operant.kind)) {
@@ -90,15 +82,12 @@ static ParserResult parse_mov(Parser *parser) {
     return parse_smov(parser);
   }
 
-  if (!(TOKEN_REGISTER_1 <= first_operant.kind &&
-        first_operant.kind <= TOKEN_REGISTER_8)) {
+  if (!token_is_register(first_operant.kind)) {
     return ResultErr(parser_error(parser, first_operant,
                                   "First operant has to be a register"));
   }
-  Token comma = lexer_next(&parser->lexer);
-  if (comma.kind != TOKEN_DEL_COMMA) {
-    return ResultErr(parser_error(parser, comma, "Expected a comma delimeter"));
-  }
+
+  EXPECT_TOKEN(parser, TOKEN_DEL_COMMA, "Expected comma delimiter");
 
   Token second_operant = lexer_next(&parser->lexer);
   if (token_is_register(second_operant.kind)) {
@@ -126,10 +115,7 @@ static ParserResult parse_add(Parser *parser) {
         parser_error(parser, reg, "First operant has to be a register"));
   }
 
-  Token comma = lexer_next(&parser->lexer);
-  if (comma.kind != TOKEN_DEL_COMMA) {
-    return ResultErr(parser_error(parser, comma, "Expected a comma delimeter"));
-  }
+  EXPECT_TOKEN(parser, TOKEN_DEL_COMMA, "Expected comma delimiter");
 
   Token second_operant = lexer_next(&parser->lexer);
   if (token_is_register(second_operant.kind)) {
@@ -153,10 +139,7 @@ static ParserResult parse_sub(Parser *parser) {
         parser_error(parser, reg, "First operant has to be a register"));
   }
 
-  Token comma = lexer_next(&parser->lexer);
-  if (comma.kind != TOKEN_DEL_COMMA) {
-    return ResultErr(parser_error(parser, comma, "Expected a comma delimeter"));
-  }
+  EXPECT_TOKEN(parser, TOKEN_DEL_COMMA, "Expected comma delimiter");
 
   Token second_operant = lexer_next(&parser->lexer);
   if (token_is_register(second_operant.kind)) {
@@ -175,6 +158,7 @@ static ParserResult parse_sub(Parser *parser) {
 
 static ParserResult parser_push(Parser *parser) {
   Token reg = lexer_next(&parser->lexer);
+
   if (token_is_register(reg.kind)) {
     return ResultOk(cpu_inst_pushr(reg.kind - TOKEN_REGISTER_1));
   }
@@ -183,8 +167,8 @@ static ParserResult parser_push(Parser *parser) {
     return ResultOk(cpu_inst_pushi(parse_u64(reg)));
   }
 
-  return ResultErr(
-      parser_error(parser, reg, "First operant has to be a register"));
+  return ResultErr(parser_error(
+      parser, reg, "First operant has to be a register or an i64 literal"));
 }
 
 static ParserResult parse_cmp(Parser *parser) {
@@ -194,10 +178,7 @@ static ParserResult parse_cmp(Parser *parser) {
         parser_error(parser, reg, "First operant has to be a register"));
   }
 
-  Token comma = lexer_next(&parser->lexer);
-  if (comma.kind != TOKEN_DEL_COMMA) {
-    return ResultErr(parser_error(parser, comma, "Expected a comma delimeter"));
-  }
+  EXPECT_TOKEN(parser, TOKEN_DEL_COMMA, "Expected comma delimiter");
 
   Token second_operant = lexer_next(&parser->lexer);
   if (token_is_register(second_operant.kind)) {
@@ -289,11 +270,5 @@ ParserResult parser_next(Parser *parser) {
 
   assert(0 && "Unreachable");
   parser->eof = true;
-  return ResultErr((ParserError){
-      .file = parser->filename,
-      .line = parser->lexer.line,
-      .bol = &parser->lexer.content[parser->lexer.bol],
-      .tk = tk,
-      .msg = "NOT IMPLEMENTED",
-  });
+  return ResultErr(parser_error(parser, tk, "Unreachable!"));
 }

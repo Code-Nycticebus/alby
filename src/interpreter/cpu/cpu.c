@@ -57,7 +57,7 @@ void cpu_dump(FILE *file, const Cpu *cpu) {
          ++i) {
       printf("   ");
     }
-    printf("^");
+    printf("^\n");
   } else {
     fprintf(file, "    --- empty ---\n");
   }
