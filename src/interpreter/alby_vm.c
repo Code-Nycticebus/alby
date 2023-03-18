@@ -10,9 +10,7 @@
 #include "../interpreter/cpu/cpu_inst.h"
 
 int alby_vm(const char *filename) {
-
   FILE *input = fopen(filename, "rb");
-
   if (input == NULL) {
     fprintf(stderr, "Error: Could not open file '%s': %s\n", filename,
             strerror(errno));
