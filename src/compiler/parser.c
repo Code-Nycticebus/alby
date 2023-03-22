@@ -27,7 +27,6 @@ static ParserError parser_error(const Parser *parser, const Token tk,
 }
 
 static uint64_t parse_u64(Token tk) {
-  // TODO better error handling on int parsing
   assert(tk.kind == TOKEN_LIT_I64);
   const int base = 10;
   return strtoul(tk.token, NULL, base);
@@ -77,7 +76,6 @@ static ParserResult parse_smov(Parser *parser) {
 
 static ParserResult parse_mov(Parser *parser) {
   Token first_operant = lexer_next(&parser->lexer);
-
   if (first_operant.kind == TOKEN_DEL_LSQUARE) {
     return parse_smov(parser);
   }
@@ -101,6 +99,28 @@ static ParserResult parse_mov(Parser *parser) {
   if (second_operant.kind == TOKEN_SYMBOL) {
     return ResultErr(parser_error(parser, second_operant,
                                   "Datatypes are not impemented yet!"));
+  }
+
+  if (second_operant.kind == TOKEN_DEL_LSQUARE) {
+    Token reg = lexer_next(&parser->lexer);
+    if (reg.kind != TOKEN_REGISTER_SB) {
+      return ResultErr(parser_error(
+          parser, reg,
+          "For now, only the address of the stack base pointer is supported!"));
+    }
+
+    EXPECT_TOKEN(parser, TOKEN_PUNCT_PLUS, "Expected '+'");
+
+    Token offset = lexer_next(&parser->lexer);
+    if (offset.kind != TOKEN_LIT_I64) {
+      return ResultErr(
+          parser_error(parser, offset, "Offset has to be an u64 literal"));
+    }
+
+    EXPECT_TOKEN(parser, TOKEN_DEL_RSQUARE, "Expected closing bracket");
+
+    return ResultOk(
+        cpu_inst_movs(reg.kind - TOKEN_REGISTER_1, parse_u64(offset)));
   }
 
   return ResultErr(parser_error(
