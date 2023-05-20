@@ -43,13 +43,14 @@ static ParserResult parse_exit(Parser *parser) {
 }
 
 static ParserResult parse_smov(Parser *parser) {
+  // TODO maybe support rsp aswell
   EXPECT_TOKEN(parser, TOKEN_REGISTER_SB, "Register has to be 'rsb'");
   EXPECT_TOKEN(parser, TOKEN_PUNCT_PLUS, "Expected a '+' here");
 
   Token offset = lexer_next(&parser->lexer);
   if (offset.kind != TOKEN_LIT_I64) {
     return ResultErr(
-        parser_error(parser, offset, "return code has to be an i64 literal!"));
+        parser_error(parser, offset, "offset has to be an i64 literal!"));
   }
 
   EXPECT_TOKEN(parser, TOKEN_DEL_RSQUARE, "Expected closing bracket");
