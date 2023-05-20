@@ -4,7 +4,7 @@ mov r3, 1  ;; b = 1
 
 ;; loop_start:
 cmp r1, 10 ;; i < 10
-jge 11     ;; == loop_end 
+jge 11     ;; 11 == loop_end 
 
 mov r4, r2 ;; tmp = a
 add r4, r3 ;; tmp += b
@@ -14,7 +14,7 @@ mov r3, r4 ;; b = tmp
 
 
 add r1, 1  ;; i++
-jmp 3      ;; == loop_start
+jmp 3      ;; 3 == loop_start
 
 ;; loop_end: 
 
