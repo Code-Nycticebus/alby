@@ -40,7 +40,7 @@ static void usage_error(const char *program, const char *msg,
 int main(int argc, const char **argv) {
   const char *program = shift(&argc, &argv);
   if (argc < 1) {
-    usage_error(program, "Not enough arguments provided", "first");
+    usage_error(program, "Not enough arguments provided", "file");
     return 1;
   }
 
