@@ -1,5 +1,8 @@
 #include "compiler.h"
 
+// For 'mkstemp'
+#define _GNU_SOURCE
+
 #include <assert.h>
 #include <errno.h>
 #include <stdio.h>
@@ -16,7 +19,9 @@
 int compile(const char *in_filename, const char *out_filename) {
   char buffer[BUFFER_SIZE] = {0};
 
-  rename(out_filename, ".backup");
+  char temp_name[] = "alby-compile-XXXXXX";
+  mkstemp(temp_name);
+  rename(out_filename, temp_name);
 
   FILE *input = fopen(in_filename, "rb");
   if (input == NULL) {
@@ -72,10 +77,12 @@ int compile(const char *in_filename, const char *out_filename) {
 
   fclose(input);
   fclose(output);
+  remove(temp_name);
   return 0;
 
 ERROR:
-  rename(".backup", out_filename);
+  rename(temp_name, out_filename);
+  remove(temp_name);
   fclose(input);
   fclose(output);
   return 1;
