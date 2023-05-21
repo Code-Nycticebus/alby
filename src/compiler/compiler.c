@@ -21,10 +21,10 @@ int compile(const char *in_filename, const char *out_filename) {
   char buffer[BUFFER_SIZE] = {0};
 
   srand(time(NULL));
-  char temp_name[5 + 8 + 1] = {0};
-  sprintf(temp_name, "alby-%x", rand() * time(NULL));
-  
+  char temp_name[] = "alby-XXXXXXXXXXXXXXXX"; // Storage for temp filename
+  sprintf(temp_name, "alby-%lx", rand() * time(NULL));
   rename(out_filename, temp_name);
+
   FILE *input = fopen(in_filename, "rb");
   if (input == NULL) {
     fprintf(stderr, "Error: Could not open file '%s': %s\n", in_filename,
@@ -38,9 +38,6 @@ int compile(const char *in_filename, const char *out_filename) {
             strerror(errno));
     exit(1);
   }
-
-  // Writing binary
-  fprintf(output, "#!./.build/bin/alby\n");
 
   size_t bytes_read;
   while ((bytes_read = fread(buffer, sizeof(char), BUFFER_SIZE, input))) {
@@ -58,7 +55,7 @@ int compile(const char *in_filename, const char *out_filename) {
         if (bytes_written < sizeof(CpuInstruction)) {
           if (ferror(input)) {
             fprintf(stderr,
-                    "Error: An error occured while writing the file: %s: %s",
+                    "Error: An error occured while writing the file: '%s': %s",
                     out_filename, strerror(errno));
             goto ERROR;
           }
@@ -72,18 +69,24 @@ int compile(const char *in_filename, const char *out_filename) {
   }
 
   if (ferror(input)) {
-    fprintf(stderr, "Error: An error occured while reading the file: %s: %s",
+    fprintf(stderr, "Error: An error occured while reading the file: '%s': %s",
+            in_filename, strerror(errno));
+    goto ERROR;
+  }
+
+  int ret = remove(temp_name);
+  if (ret != 0) {
+    fprintf(stderr, "Error: error occured while removing a file: '%s': %s",
             in_filename, strerror(errno));
     goto ERROR;
   }
 
   fclose(input);
   fclose(output);
-  remove(temp_name);
   return 0;
 
 ERROR:
-  rename(temp_name, out_filename);
+  rename(temp_name, out_filename); // Restore the backup file if parsing failed
   fclose(input);
   fclose(output);
   return 1;
