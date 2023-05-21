@@ -1,7 +1,6 @@
 #include "trie.h"
 
 #include <assert.h>
-#include <bits/stdint-uintn.h>
 
 #define TRIE_MAX_NODES 100
 

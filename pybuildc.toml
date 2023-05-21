@@ -2,5 +2,6 @@
 name = "alby"
 version = "0.0.1"
 cc = "gcc"
+cflags=["-std=c99"]
 
 [dependencies]

@@ -3,7 +3,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <sys/syscall.h>
 
 #ifndef CPU_STACK_SIZE
 #define CPU_STACK_SIZE 512
