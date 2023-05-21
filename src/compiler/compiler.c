@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "interpreter/cpu/cpu_defines.h"
 #include "lexer/lexer.h"
@@ -19,10 +20,11 @@
 int compile(const char *in_filename, const char *out_filename) {
   char buffer[BUFFER_SIZE] = {0};
 
-  char temp_name[] = "alby-compile-XXXXXX";
-  mkstemp(temp_name);
+  srand(time(NULL));
+  char temp_name[5 + 8 + 1] = {0};
+  sprintf(temp_name, "alby-%x", rand() * time(NULL));
+  
   rename(out_filename, temp_name);
-
   FILE *input = fopen(in_filename, "rb");
   if (input == NULL) {
     fprintf(stderr, "Error: Could not open file '%s': %s\n", in_filename,
@@ -82,7 +84,6 @@ int compile(const char *in_filename, const char *out_filename) {
 
 ERROR:
   rename(temp_name, out_filename);
-  remove(temp_name);
   fclose(input);
   fclose(output);
   return 1;
