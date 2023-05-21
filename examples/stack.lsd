@@ -1,0 +1,19 @@
+
+mov  r1, 1
+push r1
+push 69
+push 0
+
+add r1, 1
+
+add rsp, 2
+add rsp, 3
+
+mov [rsb + 8], 420
+
+mov r1, [rsb + 8]
+
+mov [rsb + 16], 69
+
+debug
+exit 0
