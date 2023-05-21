@@ -17,10 +17,9 @@ int alby_vm(const char *filename) {
     exit(1);
   }
 
-  const long header_size = sizeof("#!./.build/bin/alby\n") - 1;
   fseek(input, 0, SEEK_END);
-  const size_t file_size = (size_t)(ftell(input) - header_size);
-  fseek(input, header_size, SEEK_SET);
+  const size_t file_size = (size_t)ftell(input);
+  fseek(input, 0, SEEK_SET);
 
   assert(file_size % sizeof(CpuInstruction) == 0); // TODO: real runtime checks
   const size_t program_size = file_size / sizeof(CpuInstruction);
