@@ -22,7 +22,7 @@ int compile(const char *in_filename, const char *out_filename) {
 
   srand(time(NULL));
   char temp_name[] = "alby-XXXXXXXXXXXXXXXX"; // Storage for temp filename
-  snprintf(temp_name, sizeof(temp_name), "alby-%lx", rand() * time(NULL));
+  snprintf(temp_name, sizeof(temp_name) - 1, "alby-%lx", rand() * time(NULL));
   rename(out_filename, temp_name);
 
   FILE *input = fopen(in_filename, "rb");
