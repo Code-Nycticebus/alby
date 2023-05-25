@@ -1,14 +1,10 @@
 #include "compiler.h"
 
-// For 'mkstemp'
-#define _GNU_SOURCE
-
 #include <assert.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
 #include "interpreter/cpu/cpu_defines.h"
 #include "lexer/lexer.h"
@@ -17,13 +13,22 @@
 
 #define BUFFER_SIZE 1024
 
+static inline uint64_t hash(const char *str) {
+  size_t len = strlen(str);
+  uint64_t result = 0;
+  for (uint64_t i = 0; i < len; ++i) {
+    result *= len + str[i];
+  }
+  return result;
+}
+
 int compile(const char *in_filename, const char *out_filename) {
   char buffer[BUFFER_SIZE] = {0};
 
-  srand(time(NULL));
-  char temp_name[] = "alby-XXXXXXXXXXXXXXXX"; // Storage for temp filename
-  snprintf(temp_name, sizeof(temp_name) - 1, "alby-%lx", rand() * time(NULL));
-  rename(out_filename, temp_name);
+  char backup_filename[] = "alby-XXXXXXXXXXXXXXXX"; // Storage for temp filename
+  snprintf(backup_filename, sizeof(backup_filename) - 1, "alby-%lx",
+           hash(out_filename));
+  rename(out_filename, backup_filename);
 
   FILE *input = fopen(in_filename, "rb");
   if (input == NULL) {
@@ -74,19 +79,14 @@ int compile(const char *in_filename, const char *out_filename) {
     goto ERROR;
   }
 
-  int ret = remove(temp_name);
-  if (ret != 0) {
-    fprintf(stderr, "Error: error occured while removing a file: '%s': %s",
-            in_filename, strerror(errno));
-    goto ERROR;
-  }
-
+  remove(backup_filename); // Remove the old version of the bytecode file
   fclose(input);
   fclose(output);
   return 0;
 
 ERROR:
-  rename(temp_name, out_filename); // Restore the backup file if parsing failed
+  rename(backup_filename,
+         out_filename); // Restore the backup file if parsing failed
   fclose(input);
   fclose(output);
   return 1;
