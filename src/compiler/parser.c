@@ -28,6 +28,7 @@ static ParserError parser_error(const Parser *parser, const Token tk,
 
 static uint64_t parse_u64(Token tk) {
   assert(tk.kind == TOKEN_LIT_I64);
+  // TODO parse hexadecimals
   const int base = 10;
   return strtoul(tk.token, NULL, base);
 }
