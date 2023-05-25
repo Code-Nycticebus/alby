@@ -5,7 +5,7 @@
 #include "../../../src/interpreter/cpu/cpu_inst.h"
 #define loop_start 3
 #define loop_end 12
-#define program_size 15
+#define program_size 14
 
 enum Variables {
   a = sizeof(Word) * 0,
@@ -40,14 +40,14 @@ int main(void) {
       // TODO Clean the stack
 
       cpu_inst_pushr(CPU_R2), // push r2 # Pushes result on the stack
-      cpu_inst_debug(),
+      // cpu_inst_debug(),
       cpu_inst_exit(0),
   };
 
   assert((sizeof(program) / sizeof(program[0])) == program_size &&
          "You changed the program. check the jmp values");
 
-  cpu_run_program(&cpu, program);
+  cpu_run_program(&cpu, program, program_size);
 
   assert(max_iterations == 10 && "These tests are layed out for 10 iterations");
   assert(cpu.stack[res] == 89);

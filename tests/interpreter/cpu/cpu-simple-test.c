@@ -35,11 +35,11 @@ int main(void) {
       cpu_inst_addr(CPU_R1, CPU_R2), // R1 += R2
 
       cpu_inst_smovr(A, CPU_R1), // R1 -> A
-      cpu_inst_debug(),
+      // cpu_inst_debug(),
       cpu_inst_exit(0),
   };
 
-  cpu_run_program(&cpu, program);
+  cpu_run_program(&cpu, program, (sizeof(program) / sizeof(program[0])));
 
   assert(cpu.stack[A] == first + second);
   assert(cpu.reg[CPU_R2] == second);

@@ -29,7 +29,7 @@ int main(void) {
       cpu_inst_exit(0),
   };
 
-  cpu_run_program(&cpu, program);
+  cpu_run_program(&cpu, program, (sizeof(program) / sizeof(program[0])));
   assert(cpu.stack[a] == max_iterations);
 
   return 0;

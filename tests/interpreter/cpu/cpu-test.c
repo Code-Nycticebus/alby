@@ -6,7 +6,7 @@
 
 #define loop_start 3
 #define loop_end 12
-#define program_size 14
+#define program_size 13
 
 enum Variables {
   a = sizeof(Word) * 0,
@@ -37,13 +37,13 @@ int main(void) {
       cpu_inst_addi(CPU_R1, 1), // add r1, 1
       cpu_inst_jmp(loop_start), // jmp loop_start
 
-      cpu_inst_debug(), //
+      // cpu_inst_debug(), //
       cpu_inst_exit(0),
   };
   assert((sizeof(program) / sizeof(program[0])) == program_size &&
          "You changed the program. check the jmp values");
 
-  cpu_run_program(&cpu, program);
+  cpu_run_program(&cpu, program, (sizeof(program) / sizeof(program[0])));
 
   return 0;
 }
