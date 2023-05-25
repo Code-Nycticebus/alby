@@ -39,5 +39,5 @@ int alby_vm(const char *filename) {
   fclose(input);
 
   Cpu cpu = {0};
-  return cpu_run_program(&cpu, program);
+  return cpu_run_program(&cpu, program, program_size);
 }
