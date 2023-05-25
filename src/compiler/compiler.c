@@ -26,7 +26,7 @@ int compile(const char *in_filename, const char *out_filename) {
   char buffer[BUFFER_SIZE] = {0};
 
   char backup_filename[] = "alby-XXXXXXXXXXXXXXXX"; // Storage for temp filename
-  snprintf(backup_filename, sizeof(backup_filename) - 1, "alby-%lx",
+  snprintf(backup_filename, sizeof(backup_filename) - 1, "alby-%llx",
            hash(out_filename));
   rename(out_filename, backup_filename);
 
