@@ -68,7 +68,5 @@ typedef enum Register {
   CPU_R6,
   CPU_R7,
   CPU_R8,
-  CPU_RSP,
-  CPU_RSB,
   CPU_R_COUNT,
 } Register;
