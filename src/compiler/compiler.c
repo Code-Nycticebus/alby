@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <errno.h>
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,7 +27,7 @@ int compile(const char *in_filename, const char *out_filename) {
   char buffer[BUFFER_SIZE] = {0};
 
   char backup_filename[] = "alby-XXXXXXXXXXXXXXXX"; // Storage for temp filename
-  snprintf(backup_filename, sizeof(backup_filename) - 1, "alby-%llx",
+  snprintf(backup_filename, sizeof(backup_filename) - 1, "alby-%" PRIu64,
            hash(out_filename));
   rename(out_filename, backup_filename);
 
