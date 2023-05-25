@@ -7,8 +7,9 @@
 #include "cpu_inst.h"
 #include "cpu_op.h"
 
-int cpu_run_program(Cpu *cpu, const CpuInstruction *program) {
-  while (true) {
+int cpu_run_program(Cpu *cpu, const CpuInstruction *program,
+                    size_t num_instructions) {
+  while (cpu->ip < num_instructions) {
     CpuError err = cpu_step(cpu, &program[cpu->ip++]);
     if (err != CPU_ERR_OK) {
       if (err == CPU_ERROR_EXIT) {
@@ -19,7 +20,10 @@ int cpu_run_program(Cpu *cpu, const CpuInstruction *program) {
       return err;
     }
   }
-  return CPU_ERR_OK;
+  fprintf(stderr, "CpuError: %s\n",
+          cpu_err_to_cstr(CPU_ERR_INSTRUCTION_POINTER_OVERFLOW));
+  cpu_dump(stderr, cpu);
+  return CPU_ERR_INSTRUCTION_POINTER_OVERFLOW;
 }
 
 static void _dump_bytes(FILE *file, const Word *value) {
@@ -31,8 +35,8 @@ static void _dump_bytes(FILE *file, const Word *value) {
 
 void cpu_dump(FILE *file, const Cpu *cpu) {
   fprintf(file, "Cpu %lu-bit:\n", CPU_ARCHITECTURE);
-  fprintf(file, "  ip: %lu\n", cpu->ip);
-  fprintf(file, "  zf: %ld\n", cpu->zf);
+  fprintf(file, "  ip: %4lu\n", cpu->ip);
+  fprintf(file, "  zf: %4ld\n", cpu->zf);
 
   fprintf(file, "  Registers:\n");
   for (size_t i = 0; i < CPU_R_COUNT; ++i) {
@@ -41,9 +45,11 @@ void cpu_dump(FILE *file, const Cpu *cpu) {
     fprintf(file, "\n");
   }
 
+  fprintf(file, "  rsp: %4ld\n", cpu->rsp);
+  fprintf(file, "  rsb: %4ld\n", cpu->rsp);
   fprintf(file, "  Stack:\n");
-  if (cpu->reg[CPU_RSP]) {
-    for (size_t i = 0; i < cpu->reg[CPU_RSP] / sizeof(Word); ++i) {
+  if (cpu->rsp) {
+    for (size_t i = 0; i < cpu->rsp / sizeof(Word); ++i) {
       printf("    ");
       for (size_t bytes = 0; bytes < sizeof(Word); ++bytes) {
         printf("%02x ",
@@ -53,8 +59,7 @@ void cpu_dump(FILE *file, const Cpu *cpu) {
     }
 
     printf("    ");
-    for (size_t i = 0; i < sizeof(Word) - cpu->reg[CPU_RSP] % sizeof(Word);
-         ++i) {
+    for (size_t i = 0; i < sizeof(Word) - cpu->rsp % sizeof(Word); ++i) {
       printf("   ");
     }
     printf("^\n");
