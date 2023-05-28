@@ -77,8 +77,10 @@ void cpu_dump(FILE *file, const Cpu *cpu) {
     }
 
     fprintf(file, "    ");
-    for (size_t i = 0; i < sizeof(Word) - cpu->rsp % sizeof(Word); ++i) {
-      fprintf(file, "   ");
+    if (cpu->rsp % sizeof(Word)) {
+      for (size_t i = 0; i < sizeof(Word) - cpu->rsp % sizeof(Word); ++i) {
+        fprintf(file, "   ");
+      }
     }
     fprintf(file, "^\n");
   } else {
