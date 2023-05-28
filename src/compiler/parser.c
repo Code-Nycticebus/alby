@@ -7,6 +7,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define PARSER_BASE_DEZ 10
+#define PARSER_BASE_HEX 16
+
 #define EXPECT_TOKEN(p, token, msg)                                            \
   do {                                                                         \
     Token t = lexer_next(&p->lexer);                                           \
@@ -28,8 +31,12 @@ static ParserError parser_error(const Parser *parser, const Token tk,
 
 static uint64_t parse_u64(Token tk) {
   assert(tk.kind == TOKEN_LIT_I64);
-  // TODO parse hexadecimals
-  const int base = 10;
+  int base = PARSER_BASE_DEZ;
+  if (tk.token[0] == '0' && tk.len > 1) {
+    if (tk.token[1] == 'x') {
+      base = PARSER_BASE_HEX;
+    }
+  }
   return strtoul(tk.token, NULL, base);
 }
 
