@@ -1,6 +1,7 @@
 #include "cpu.h"
 
 #include <assert.h>
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -39,7 +40,7 @@ void cpu_dump(FILE *file, const Cpu *cpu) {
   fprintf(file, "  zf: %4ld\n", cpu->zf);
 
   fprintf(file, "  Registers:\n");
-  for (size_t i = 0; i < CPU_R_COUNT; ++i) {
+  for (size_t i = 0; i < CPU_REGISTER_COUNT; ++i) {
     fprintf(file, "    R%lu: ", i + 1);
     _dump_bytes(file, &cpu->reg[i]);
     fprintf(file, "\n");
@@ -48,21 +49,40 @@ void cpu_dump(FILE *file, const Cpu *cpu) {
   fprintf(file, "  rsp: %4ld\n", cpu->rsp);
   fprintf(file, "  rsb: %4ld\n", cpu->rsp);
   fprintf(file, "  Stack:\n");
-  if (cpu->rsp) {
-    for (size_t i = 0; i < cpu->rsp / sizeof(Word); ++i) {
-      printf("    ");
+
+  size_t rsp = cpu->rsp % sizeof(Word) == 0
+                   ? cpu->rsp
+                   : ((cpu->rsp / sizeof(Word)) + 1) * sizeof(Word);
+
+  if (rsp) {
+    for (size_t i = 0; i < rsp / sizeof(Word); ++i) {
+      fprintf(file, "    ");
       for (size_t bytes = 0; bytes < sizeof(Word); ++bytes) {
-        printf("%02x ",
-               cpu->stack[(i * sizeof(Word)) + sizeof(Word) - bytes - 1]);
+        fprintf(file, "%02x ",
+                cpu->stack[(i * sizeof(Word)) + sizeof(Word) - bytes - 1]);
       }
-      printf(" |%3lu\n", i * sizeof(Word));
+
+      fprintf(file, " | ");
+      for (size_t bytes = 0; bytes < sizeof(Word); ++bytes) {
+        uint8_t current_byte =
+            cpu->stack[(i * sizeof(Word)) + sizeof(Word) - bytes - 1];
+        if (isprint((current_byte))) {
+          fprintf(file, "%c", current_byte);
+        } else {
+          fprintf(file, ".");
+        }
+      }
+
+      fprintf(file, " |%3lu\n", i * sizeof(Word));
     }
 
-    printf("    ");
-    for (size_t i = 0; i < sizeof(Word) - cpu->rsp % sizeof(Word); ++i) {
-      printf("   ");
+    fprintf(file, "    ");
+    if (cpu->rsp % sizeof(Word)) {
+      for (size_t i = 0; i < sizeof(Word) - cpu->rsp % sizeof(Word); ++i) {
+        fprintf(file, "   ");
+      }
     }
-    printf("^\n");
+    fprintf(file, "^\n");
   } else {
     fprintf(file, "    --- empty ---\n");
   }
