@@ -7,7 +7,7 @@
 typedef struct Cpu {
   size_t ip;
   int64_t zf;
-  Word reg[CPU_R_COUNT];
+  Word reg[CPU_REGISTER_COUNT];
   Word rsp;
   Word rsb;
 

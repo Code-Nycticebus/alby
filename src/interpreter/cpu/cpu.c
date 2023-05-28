@@ -39,7 +39,7 @@ void cpu_dump(FILE *file, const Cpu *cpu) {
   fprintf(file, "  zf: %4ld\n", cpu->zf);
 
   fprintf(file, "  Registers:\n");
-  for (size_t i = 0; i < CPU_R_COUNT; ++i) {
+  for (size_t i = 0; i < CPU_REGISTER_COUNT; ++i) {
     fprintf(file, "    R%lu: ", i + 1);
     _dump_bytes(file, &cpu->reg[i]);
     fprintf(file, "\n");
@@ -48,8 +48,13 @@ void cpu_dump(FILE *file, const Cpu *cpu) {
   fprintf(file, "  rsp: %4ld\n", cpu->rsp);
   fprintf(file, "  rsb: %4ld\n", cpu->rsp);
   fprintf(file, "  Stack:\n");
-  if (cpu->rsp) {
-    for (size_t i = 0; i < cpu->rsp / sizeof(Word); ++i) {
+
+  size_t rsp = cpu->rsp % sizeof(Word) == 0
+                   ? cpu->rsp
+                   : ((cpu->rsp / sizeof(Word)) + 1) * sizeof(Word);
+
+  if (rsp) {
+    for (size_t i = 0; i < rsp / sizeof(Word); ++i) {
       printf("    ");
       for (size_t bytes = 0; bytes < sizeof(Word); ++bytes) {
         printf("%02x ",
