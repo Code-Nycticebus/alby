@@ -196,7 +196,7 @@ Token lexer_next(Lexer *l) {
   // digit handling
   if (isdigit(current)) {
     Token t = {.kind = TOKEN_LIT_I64, .token = &l->content[l->cursor]};
-    while (l->cursor < l->size && isdigit(lexer_char_get(l))) {
+    while (l->cursor < l->size && isalnum(lexer_char_get(l))) {
       t.len += 1;
       lexer_char_step(l);
     }
