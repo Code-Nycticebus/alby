@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "interpreter/cpu/cpu.h"
 #include "interpreter/cpu/cpu_defines.h"
 #include "lexer/lexer.h"
 #include "parser.h"
@@ -44,6 +45,9 @@ int compile(const char *in_filename, const char *out_filename) {
             strerror(errno));
     exit(1);
   }
+
+  Cpu cpu = {0};
+  fwrite(&cpu, sizeof(cpu), 1, output);
 
   size_t bytes_read;
   while ((bytes_read = fread(buffer, sizeof(char), BUFFER_SIZE, input))) {
