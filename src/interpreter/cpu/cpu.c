@@ -1,6 +1,7 @@
 #include "cpu.h"
 
 #include <assert.h>
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -55,19 +56,31 @@ void cpu_dump(FILE *file, const Cpu *cpu) {
 
   if (rsp) {
     for (size_t i = 0; i < rsp / sizeof(Word); ++i) {
-      printf("    ");
+      fprintf(file, "    ");
       for (size_t bytes = 0; bytes < sizeof(Word); ++bytes) {
-        printf("%02x ",
-               cpu->stack[(i * sizeof(Word)) + sizeof(Word) - bytes - 1]);
+        fprintf(file, "%02x ",
+                cpu->stack[(i * sizeof(Word)) + sizeof(Word) - bytes - 1]);
       }
-      printf(" |%3lu\n", i * sizeof(Word));
+
+      fprintf(file, " | ");
+      for (size_t bytes = 0; bytes < sizeof(Word); ++bytes) {
+        uint8_t current_byte =
+            cpu->stack[(i * sizeof(Word)) + sizeof(Word) - bytes - 1];
+        if (isprint((current_byte))) {
+          fprintf(file, "%c", current_byte);
+        } else {
+          fprintf(file, ".");
+        }
+      }
+
+      fprintf(file, " |%3lu\n", i * sizeof(Word));
     }
 
-    printf("    ");
+    fprintf(file, "    ");
     for (size_t i = 0; i < sizeof(Word) - cpu->rsp % sizeof(Word); ++i) {
-      printf("   ");
+      fprintf(file, "   ");
     }
-    printf("^\n");
+    fprintf(file, "^\n");
   } else {
     fprintf(file, "    --- empty ---\n");
   }
