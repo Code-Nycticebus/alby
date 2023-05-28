@@ -60,7 +60,8 @@ static inline CpuError cpu_op_pop(Cpu *cpu, Register reg) {
   if (cpu->rsp == 0) {
     return CPU_ERR_STACK_UNDERFLOW;
   }
-  cpu->reg[reg] = cpu->stack[--cpu->rsp];
+  cpu->reg[reg] = *(Word *)&cpu->stack[cpu->rsp];
+  cpu->rsp -= sizeof(Word);
   return CPU_ERR_OK;
 }
 
