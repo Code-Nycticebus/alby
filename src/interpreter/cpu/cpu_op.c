@@ -26,7 +26,7 @@ static inline CpuError cpu_op_movs(Cpu *cpu, Register reg,
   if (cpu->rsp && cpu->rsp < stack_offset) {
     return CPU_ERR_STACK_UNDERFLOW;
   }
-  cpu->reg[reg] = cpu->stack[stack_offset];
+  cpu->reg[reg] = *(Word *)&cpu->stack[stack_offset];
   return CPU_ERR_OK;
 }
 

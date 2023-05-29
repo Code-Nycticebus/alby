@@ -13,7 +13,7 @@ enum Variables {
   b = sizeof(Word) * 1,
 };
 
-#define max_iterations 15
+#define max_iterations 50
 
 int main(void) {
   Cpu cpu = {0};
@@ -30,12 +30,13 @@ int main(void) {
       cpu_inst_movs(CPU_R3, b),      // mov r3, b
       cpu_inst_addr(CPU_R2, CPU_R3), // add r2, r3
 
-      cpu_inst_pushr(CPU_R2),      // push r2
       cpu_inst_smovr(b, CPU_R2), // mov b, r2
       cpu_inst_smovr(a, CPU_R3), // mov a, r3
 
       cpu_inst_addi(CPU_R1, 1), // add r1, 1
       cpu_inst_jmp(loop_start), // jmp loop_start
+
+      cpu_inst_pushr(CPU_R2), // push r2
 
       cpu_inst_debug(), //
       cpu_inst_exit(0),
@@ -45,8 +46,8 @@ int main(void) {
 
   cpu_run_program(&cpu, program, (sizeof(program) / sizeof(program[0])));
 
-
-  assert(cpu.ip == program_size && "Instruction pointer is not at the place it should be!");
+  assert(cpu.ip == program_size &&
+         "Instruction pointer is not at the place it should be!");
 
   return 0;
 }
