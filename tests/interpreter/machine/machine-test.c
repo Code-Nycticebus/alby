@@ -1,7 +1,7 @@
 
 
 #include <assert.h>
-#include <bits/stdint-uintn.h>
+#include <stdint.h>
 #include <stdio.h>
 
 #include "../../../src/interpreter/cpu/cpu.h"

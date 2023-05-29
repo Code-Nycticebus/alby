@@ -15,6 +15,12 @@
 
 #define BUFFER_SIZE 1024
 
+#if defined(_WIN32) || defined(_WIN64)
+#define HASH_FORMAT "%llx"
+#else
+#define HASH_FORMAT "%lx"
+#endif
+
 static inline uint64_t hash(const char *str) {
   size_t len = strlen(str);
   uint64_t result = 0;
@@ -28,7 +34,7 @@ int compile(const char *in_filename, const char *out_filename) {
   char buffer[BUFFER_SIZE] = {0};
 
   char backup_filename[] = "alby-XXXXXXXXXXXXXXXX"; // Storage for temp filename
-  snprintf(backup_filename, sizeof(backup_filename) - 1, "alby-%" PRIu64,
+  snprintf(backup_filename, sizeof(backup_filename) - 1, "alby-"HASH_FORMAT,
            hash(out_filename));
   rename(out_filename, backup_filename);
 
