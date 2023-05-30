@@ -59,9 +59,10 @@ int main(int argc, const char **argv) {
     option = "-r";
   }
   if (option[0] != '-') {
-    usage_error(program, "Expected argument like: -c -d -f", option);
+    usage_error(program, "Expected argument like: -c -f", option);
     return -1;
   }
+  printf("%s %s\n", input_file, option);
 
   switch (option[1]) {
   case 'c': {
@@ -72,13 +73,20 @@ int main(int argc, const char **argv) {
     }
     return compile(input_file, output_file);
   }
-  case 'd':
-    assert(0 && "NOT IMPLEMENTED");
-    break;
-  case 'r':
+  case 'r': {
+    const char *output_file = shift(&argc, &argv);
+    if (output_file) {
+      if (compile(input_file, output_file) != 0) {
+        return -1;
+      }
+      return alby_vm(output_file);
+    }
     return alby_vm(input_file);
+  }
+
   default:
-    usage_error(program, "Option has to be one of these (-r, -c, -d)", option);
+    usage_error(program, "Option has to be one of these (-r, -c)", option);
+    return -1;
   }
 
   return 0;
