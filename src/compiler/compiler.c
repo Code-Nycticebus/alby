@@ -22,7 +22,7 @@
 
 static inline uint64_t hash(const char *str) {
   size_t len = strlen(str);
-  uint64_t result = 0;
+  uint64_t result = 1;
   for (uint64_t i = 0; i < len; ++i) {
     result *= len + str[i];
   }
@@ -33,22 +33,23 @@ int compile(const char *in_filename, const char *out_filename) {
   char buffer[BUFFER_SIZE] = {0};
 
   char backup_filename[] = "alby-XXXXXXXXXXXXXXXX"; // Storage for temp filename
-  snprintf(backup_filename, sizeof(backup_filename) - 1, "alby-"HASH_FORMAT,
+  snprintf(backup_filename, sizeof(backup_filename) - 1, "alby-" HASH_FORMAT,
            hash(out_filename));
   rename(out_filename, backup_filename);
 
   FILE *input = fopen(in_filename, "rb");
+  FILE *output = fopen(out_filename, "wb");
+
   if (input == NULL) {
     fprintf(stderr, "Error: Could not open file '%s': %s\n", in_filename,
             strerror(errno));
-    exit(1);
+    goto ERROR;
   }
 
-  FILE *output = fopen(out_filename, "wb");
   if (output == NULL) {
     fprintf(stderr, "Error: Could not open file '%s': %s\n", out_filename,
             strerror(errno));
-    exit(1);
+    goto ERROR;
   }
 
   Cpu cpu = {0};
