@@ -50,15 +50,13 @@ void cpu_dump(FILE *file, const Cpu *cpu) {
   fprintf(file, "  rsb: %4ld\n", cpu->rsp);
   fprintf(file, "  Stack:\n");
 
-  size_t rsp = cpu->rsp % sizeof(Word) == 0
-                   ? cpu->rsp
-                   : ((cpu->rsp / sizeof(Word)) + 1) * sizeof(Word);
+  size_t rsp = ((cpu->rsp / sizeof(Word)) + 1) * sizeof(Word);
 
   if (rsp) {
     for (size_t i = 0; i < rsp / sizeof(Word); ++i) {
-      fprintf(file, "    ");
+      fprintf(file, "   | ");
       for (size_t bytes = 0; bytes < sizeof(Word); ++bytes) {
-        fprintf(file, "%02x ",
+        fprintf(file, "%02X ",
                 cpu->stack[(i * sizeof(Word)) + sizeof(Word) - bytes - 1]);
       }
 
@@ -73,16 +71,14 @@ void cpu_dump(FILE *file, const Cpu *cpu) {
         }
       }
 
-      fprintf(file, " |%3lu\n", i * sizeof(Word));
+      fprintf(file, " | %lu\n", i * sizeof(Word));
     }
 
-    fprintf(file, "    ");
-    if (cpu->rsp % sizeof(Word)) {
-      for (size_t i = 0; i < sizeof(Word) - cpu->rsp % sizeof(Word); ++i) {
-        fprintf(file, "   ");
-      }
+    fprintf(file, "     ");
+    for (size_t i = 0; i < sizeof(Word) - cpu->rsp % sizeof(Word) - 1; ++i) {
+      fprintf(file, "   ");
     }
-    fprintf(file, "^\n");
+    fprintf(file, "^^\n");
   } else {
     fprintf(file, "    --- empty ---\n");
   }
