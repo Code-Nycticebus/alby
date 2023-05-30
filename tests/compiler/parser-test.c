@@ -34,7 +34,7 @@ int main(void) {
   NEXT(pr, p);
   assert(pr.value.ok.operation == CPU_OP_MOVI &&
          "Parser did not parse operation correctly");
-  assert(pr.value.ok.value2 == 34 &&
+  assert(pr.value.ok.value2.i64 == 34 &&
          "Parser did not parse the integer correctly");
 
   NEXT(pr, p);

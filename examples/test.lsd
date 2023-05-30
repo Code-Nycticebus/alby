@@ -1,9 +1,9 @@
 mov r1, 1
 mov r2, 2
-mov r3, 0x3
+mov r3, 0X3
 
 push 0xcafe
-push 0x6f6c6c6548
+push 0X6f6c6c6548
 
 debug
 exit 0

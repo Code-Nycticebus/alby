@@ -8,8 +8,8 @@ typedef struct Cpu {
   size_t ip;
   int64_t zf;
   Word reg[CPU_REGISTER_COUNT];
-  Word rsp;
-  Word rsb;
+  size_t rsp;
+  size_t rsb;
 
   uint8_t stack[CPU_STACK_SIZE];
 } Cpu;

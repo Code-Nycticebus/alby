@@ -14,7 +14,7 @@ int cpu_run_program(Cpu *cpu, const CpuInstruction *program,
     CpuError err = cpu_step(cpu, &program[cpu->ip++]);
     if (err != CPU_ERR_OK) {
       if (err == CPU_ERROR_EXIT) {
-        return (int)cpu->reg[CPU_R1];
+        return (int)cpu->reg[CPU_R1].i32;
       }
       fprintf(stderr, "CpuError: %s\n", cpu_err_to_cstr(err));
       cpu_dump(stderr, cpu);

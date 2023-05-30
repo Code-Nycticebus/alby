@@ -7,9 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define PARSER_BASE_DEZ 10
-#define PARSER_BASE_HEX 16
-
 #define EXPECT_TOKEN(p, token, msg)                                            \
   do {                                                                         \
     Token t = lexer_next(&p->lexer);                                           \
@@ -29,15 +26,9 @@ static ParserError parser_error(const Parser *parser, const Token tk,
   };
 }
 
-static uint64_t parse_u64(Token tk) {
+static int64_t parse_i64(Token tk) {
   assert(tk.kind == TOKEN_LIT_I64);
-  int base = PARSER_BASE_DEZ;
-  if (tk.token[0] == '0' && tk.len > 1) {
-    if (tk.token[1] == 'x') {
-      base = PARSER_BASE_HEX;
-    }
-  }
-  return strtoul(tk.token, NULL, base);
+  return strtoul(tk.token, NULL, 0);
 }
 
 static ParserResult parse_exit(Parser *parser) {
@@ -47,7 +38,7 @@ static ParserResult parse_exit(Parser *parser) {
                                   "return code has to be an i64 literal!"));
   }
 
-  return ResultOk(cpu_inst_exit(parse_u64(return_code)));
+  return ResultOk(cpu_inst_exit(parse_i64(return_code)));
 }
 
 static ParserResult parse_smov(Parser *parser) {
@@ -66,12 +57,12 @@ static ParserResult parse_smov(Parser *parser) {
 
   Token second_operant = lexer_next(&parser->lexer);
   if (token_is_register(second_operant.kind)) {
-    return ResultOk(cpu_inst_smovr(parse_u64(offset),
-                                   second_operant.kind - TOKEN_REGISTER_1));
+    return ResultOk(cpu_inst_i64_smovr(parse_i64(offset),
+                                       second_operant.kind - TOKEN_REGISTER_1));
   }
   if (second_operant.kind == TOKEN_LIT_I64) {
     return ResultOk(
-        cpu_inst_smovi(parse_u64(offset), parse_u64(second_operant)));
+        cpu_inst_i64_smov(parse_i64(offset), parse_i64(second_operant)));
   }
   if (second_operant.kind == TOKEN_SYMBOL) {
     return ResultErr(parser_error(parser, second_operant,
@@ -98,12 +89,12 @@ static ParserResult parse_mov(Parser *parser) {
 
   Token second_operant = lexer_next(&parser->lexer);
   if (token_is_register(second_operant.kind)) {
-    return ResultOk(cpu_inst_movr(first_operant.kind - TOKEN_REGISTER_1,
-                                  second_operant.kind - TOKEN_REGISTER_1));
+    return ResultOk(cpu_inst_i64_movr(first_operant.kind - TOKEN_REGISTER_1,
+                                      second_operant.kind - TOKEN_REGISTER_1));
   }
   if (second_operant.kind == TOKEN_LIT_I64) {
-    return ResultOk(cpu_inst_movi(first_operant.kind - TOKEN_REGISTER_1,
-                                  parse_u64(second_operant)));
+    return ResultOk(cpu_inst_i64_mov(first_operant.kind - TOKEN_REGISTER_1,
+                                     parse_i64(second_operant)));
   }
   if (second_operant.kind == TOKEN_SYMBOL) {
     return ResultErr(parser_error(parser, second_operant,
@@ -129,7 +120,7 @@ static ParserResult parse_mov(Parser *parser) {
     EXPECT_TOKEN(parser, TOKEN_DEL_RSQUARE, "Expected closing bracket");
 
     return ResultOk(
-        cpu_inst_movs(reg.kind - TOKEN_REGISTER_1, parse_u64(offset)));
+        cpu_inst_i64_movs(reg.kind - TOKEN_REGISTER_1, parse_i64(offset)));
   }
 
   return ResultErr(parser_error(
@@ -148,12 +139,12 @@ static ParserResult parse_add(Parser *parser) {
 
   Token second_operant = lexer_next(&parser->lexer);
   if (token_is_register(second_operant.kind)) {
-    return ResultOk(cpu_inst_addr(reg.kind - TOKEN_REGISTER_1,
-                                  second_operant.kind - TOKEN_REGISTER_1));
+    return ResultOk(cpu_inst_i64_addr(reg.kind - TOKEN_REGISTER_1,
+                                      second_operant.kind - TOKEN_REGISTER_1));
   }
   if (second_operant.kind == TOKEN_LIT_I64) {
-    return ResultOk(
-        cpu_inst_addi(reg.kind - TOKEN_REGISTER_1, parse_u64(second_operant)));
+    return ResultOk(cpu_inst_i64_add(reg.kind - TOKEN_REGISTER_1,
+                                     parse_i64(second_operant)));
   }
 
   return ResultErr(
@@ -172,12 +163,12 @@ static ParserResult parse_sub(Parser *parser) {
 
   Token second_operant = lexer_next(&parser->lexer);
   if (token_is_register(second_operant.kind)) {
-    return ResultOk(cpu_inst_subr(reg.kind - TOKEN_REGISTER_1,
-                                  second_operant.kind - TOKEN_REGISTER_1));
+    return ResultOk(cpu_inst_i64_subr(reg.kind - TOKEN_REGISTER_1,
+                                      second_operant.kind - TOKEN_REGISTER_1));
   }
   if (second_operant.kind == TOKEN_LIT_I64) {
-    return ResultOk(
-        cpu_inst_subi(reg.kind - TOKEN_REGISTER_1, parse_u64(second_operant)));
+    return ResultOk(cpu_inst_i64_sub(reg.kind - TOKEN_REGISTER_1,
+                                     parse_i64(second_operant)));
   }
 
   return ResultErr(
@@ -185,15 +176,15 @@ static ParserResult parse_sub(Parser *parser) {
                    "Second operant has to be a i64 literal or a register"));
 }
 
-static ParserResult parser_push(Parser *parser) {
+static ParserResult parse_push(Parser *parser) {
   Token reg = lexer_next(&parser->lexer);
 
   if (token_is_register(reg.kind)) {
-    return ResultOk(cpu_inst_pushr(reg.kind - TOKEN_REGISTER_1));
+    return ResultOk(cpu_inst_i64_pushr(reg.kind - TOKEN_REGISTER_1));
   }
 
   if (reg.kind == TOKEN_LIT_I64) {
-    return ResultOk(cpu_inst_pushi(parse_u64(reg)));
+    return ResultOk(cpu_inst_i64_push(parse_i64(reg)));
   }
 
   return ResultErr(parser_error(
@@ -211,12 +202,12 @@ static ParserResult parse_cmp(Parser *parser) {
 
   Token second_operant = lexer_next(&parser->lexer);
   if (token_is_register(second_operant.kind)) {
-    return ResultOk(cpu_inst_cmpr(reg.kind - TOKEN_REGISTER_1,
-                                  second_operant.kind - TOKEN_REGISTER_1));
+    return ResultOk(cpu_inst_i64_cmpr(reg.kind - TOKEN_REGISTER_1,
+                                      second_operant.kind - TOKEN_REGISTER_1));
   }
   if (second_operant.kind == TOKEN_LIT_I64) {
-    return ResultOk(
-        cpu_inst_cmpi(reg.kind - TOKEN_REGISTER_1, parse_u64(second_operant)));
+    return ResultOk(cpu_inst_i64_cmp(reg.kind - TOKEN_REGISTER_1,
+                                     parse_i64(second_operant)));
   }
   return ResultErr(
       parser_error(parser, second_operant,
@@ -231,7 +222,7 @@ static ParserResult parse_jmp(Parser *parser) {
   }
 
   // TODO error handling on jump address
-  Word jmp_address = parse_u64(ptr);
+  size_t jmp_address = parse_i64(ptr);
 
   return ResultOk(cpu_inst_jmp(jmp_address));
 }
@@ -244,7 +235,7 @@ static ParserResult parse_jge(Parser *parser) {
   }
 
   // TODO error handling on jump address
-  Word jmp_address = parse_u64(ptr);
+  size_t jmp_address = parse_i64(ptr);
 
   return ResultOk(cpu_inst_jge(jmp_address));
 }
@@ -255,7 +246,7 @@ ParserResult parser_next(Parser *parser) {
   switch (tk.kind) {
 
   case TOKEN_PUSH:
-    return parser_push(parser);
+    return parse_push(parser);
 
   case TOKEN_MOV:
     return parse_mov(parser);

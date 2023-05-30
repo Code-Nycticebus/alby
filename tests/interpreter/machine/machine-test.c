@@ -20,7 +20,7 @@ enum Constants {
 int main(void) {
   Cpu cpu = {
       .ip = 1,
-      .reg = {0},
+      .reg = {{0}},
       .rsb = CONSTANT_COUNT,
       .rsp = CONSTANT_COUNT,
       .stack =
@@ -37,12 +37,12 @@ int main(void) {
   };
 
   CpuInstruction program[] = {
-      cpu_inst_pushi(0xcafebabe), // mov b, 1;
-      cpu_inst_pushi(0xdeadbeef), // mov b, 1;
+      cpu_inst_i64_push(0xcafebabe), // mov b, 1;
+      cpu_inst_i64_push(0xdeadbeef), // mov b, 1;
 
-      cpu_inst_movs(CPU_R2, CONSTANT_STR),
+      cpu_inst_i64_movs(CPU_R2, CONSTANT_STR),
 
-      cpu_inst_pop(CPU_R1),
+      cpu_inst_i64_pop(CPU_R1),
       cpu_inst_debug(), //
       cpu_inst_exit(0),
   };
