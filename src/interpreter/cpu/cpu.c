@@ -47,7 +47,7 @@ void cpu_dump(FILE *file, const Cpu *cpu) {
   }
 
   fprintf(file, "  rsp: %4ld\n", cpu->rsp);
-  fprintf(file, "  rsb: %4ld\n", cpu->rsp);
+  fprintf(file, "  rsb: %4ld\n", cpu->rsb);
   fprintf(file, "  Stack:\n");
 
   size_t rsp = ((cpu->rsp / sizeof(Word)) + 1) * sizeof(Word);
