@@ -8,46 +8,39 @@
 #include "../../../src/interpreter/cpu/cpu_inst.h"
 #include "interpreter/cpu/cpu_defines.h"
 
-#define max_iterations 5
-#define STRLEN 6
+#define OFFSET 9
 
-enum Constants {
-  CONSTANT_STR_LEN,
-  CONSTANT_STR = CONSTANT_STR_LEN + sizeof(Word),
-  CONSTANT_COUNT = CONSTANT_STR + STRLEN,
-};
+char msg[] = "Fuck you\0"
+             "Who cares";
 
 int main(void) {
   Cpu cpu = {
-      .ip = 1,
+      .ip = 0,
       .reg = {{0}},
-      .rsb = CONSTANT_COUNT,
-      .rsp = CONSTANT_COUNT,
-      .stack =
-          {
-              [CONSTANT_STR_LEN] = STRLEN,
-              [CONSTANT_STR + 0] = 'H',
-              [CONSTANT_STR + 1] = 'e',
-              [CONSTANT_STR + 2] = 'l',
-              [CONSTANT_STR + 3] = 'l',
-              [CONSTANT_STR + 4] = 'o',
-              [CONSTANT_STR + 5] = '\0',
-          },
-
+      .rsb = 0,
+      .rsp = sizeof(msg),
+      .stack = {0},
   };
 
+  for (size_t i = 0; i < sizeof(msg); ++i) {
+    cpu.stack[i] = msg[i];
+  }
+
   CpuInstruction program[] = {
-      cpu_inst_i64_push(0xcafebabe), // mov b, 1;
-      cpu_inst_i64_push(0xdeadbeef), // mov b, 1;
+      cpu_inst_i64_push(-9223372036854775807), // mov b, 1;
 
-      cpu_inst_i64_movs(CPU_R2, CONSTANT_STR),
+      cpu_inst_i64_mov(CPU_R2, (int64_t)&cpu.stack[0]),
+      cpu_inst_i64_mov(CPU_R3, (int64_t)&cpu.stack[OFFSET]),
 
-      cpu_inst_i64_pop(CPU_R1),
+      cpu_inst_i64_pop(CPU_R4),
+      cpu_inst_i64_sub(CPU_R4, 1),
+
       cpu_inst_debug(), //
       cpu_inst_exit(0),
   };
 
   cpu_run_program(&cpu, program, (sizeof(program) / sizeof(program[0])));
-
+  printf("%s | %s\n", (char *)cpu.reg[CPU_R2].ptr, (char *)cpu.reg[CPU_R3].ptr);
+  printf("%ld\n", cpu.reg[CPU_R4].i64);
   return 0;
 }

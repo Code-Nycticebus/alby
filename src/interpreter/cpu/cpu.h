@@ -13,6 +13,7 @@ typedef union {
   int64_t i64;
   Register r;
   size_t size_t;
+  void *ptr;
 } Word;
 
 #define CPU_ARCHITECTURE (sizeof(Word) * 8)
