@@ -34,7 +34,6 @@ static inline CpuError cpu_op_i64_push(Cpu *cpu, const int64_t value) {
   if (cpu->rsp >= CPU_STACK_SIZE) {
     return CPU_ERR_STACK_OVERFLOW;
   }
-  printf("VAL: %lx\n", value);
   *(int64_t *)&cpu->stack[cpu->rsp] = value;
   cpu->rsp += sizeof(int64_t);
   return CPU_ERR_OK;

@@ -49,6 +49,6 @@ CpuInstruction cpu_inst_i64_div(Register reg, int64_t value);
 CpuInstruction cpu_inst_i64_divr(Register reg1, Register reg2);
 
 /* Utils */
-CpuInstruction cpu_inst_syscall(Word syscall);
+CpuInstruction cpu_inst_syscall(int64_t syscall);
 CpuInstruction cpu_inst_debug(void);
 CpuInstruction cpu_inst_exit(int32_t code);
