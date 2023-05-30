@@ -36,7 +36,7 @@ int main(void) {
       cpu_inst_i64_addr(CPU_R1, CPU_R2), // R1 += R2
 
       cpu_inst_i64_smovr(A, CPU_R1), // R1 -> A
-      cpu_inst_debug(),
+      // cpu_inst_debug(),
       cpu_inst_exit(0),
   };
 

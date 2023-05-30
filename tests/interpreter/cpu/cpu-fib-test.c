@@ -5,7 +5,7 @@
 #include "../../../src/interpreter/cpu/cpu_inst.h"
 #define loop_start 3
 #define loop_end 12
-#define program_size 15
+#define program_size 14
 
 enum Variables {
   a = sizeof(Word) * 0,
@@ -40,7 +40,7 @@ int main(void) {
       // TODO Clean the stack
 
       cpu_inst_i64_pushr(CPU_R2), // push r2 # Pushes result on the stack
-      cpu_inst_debug(),
+      // cpu_inst_debug(),
       cpu_inst_exit(0),
   };
 

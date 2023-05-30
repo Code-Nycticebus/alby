@@ -24,7 +24,7 @@ int main(void) {
 
       cpu_inst_i64_pushr(CPU_R1), // size_t a = 0;
 
-      cpu_inst_debug(),
+      // cpu_inst_debug(),
       // LABEL
       cpu_inst_exit(0),
   };

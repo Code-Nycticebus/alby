@@ -6,7 +6,7 @@
 
 #define loop_start 3
 #define loop_end 13
-#define program_size 15
+#define program_size 14
 
 enum Variables {
   a = sizeof(Word) * 0,
@@ -38,7 +38,7 @@ int main(void) {
 
       cpu_inst_i64_pushr(CPU_R2), // push r2
 
-      cpu_inst_debug(), //
+      // cpu_inst_debug(), //
       cpu_inst_exit(0),
   };
   assert((sizeof(program) / sizeof(program[0])) == program_size &&
