@@ -8,7 +8,18 @@
 #define CPU_STACK_SIZE 512
 #endif // !CPU_STACK_SIZE
 
+// typedef union {
+//	int8_t i8;
+//	uint8_t u8;
+//	int32_t i32;
+//	uint32_t u32;
+//	int64_t i64;
+//	uint64_t u64;
+//} Word;
+
 typedef uint64_t Word;
+
+
 #define CPU_ARCHITECTURE (sizeof(Word) * 8)
 
 typedef struct CpuInstruction CpuInstruction;
