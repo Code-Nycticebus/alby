@@ -4,6 +4,19 @@
 
 #include <stdio.h>
 
+typedef union {
+  uint8_t u8;
+  int8_t i8;
+  uint32_t u32;
+  int32_t i32;
+  uint64_t u64;
+  int64_t i64;
+  Register r;
+  size_t size_t;
+} Word;
+
+#define CPU_ARCHITECTURE (sizeof(Word) * 8)
+
 typedef struct Cpu {
   size_t ip;
   int64_t zf;

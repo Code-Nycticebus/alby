@@ -190,10 +190,10 @@ CpuInstruction cpu_inst_i64_divr(const Register reg1, const Register reg2) {
   };
 }
 /* Util */
-CpuInstruction cpu_inst_syscall(const Word syscall) {
+CpuInstruction cpu_inst_syscall(const int64_t syscall) {
   return (CpuInstruction){
       .operation = CPU_OP_SYSCALL,
-      .value1 = syscall,
+      .value1 = {.i64 = syscall},
   };
 }
 

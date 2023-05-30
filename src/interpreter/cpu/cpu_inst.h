@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cpu.h"
 #include "cpu_defines.h"
 
 struct CpuInstruction {
