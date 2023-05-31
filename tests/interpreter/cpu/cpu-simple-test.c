@@ -1,5 +1,4 @@
 #include <assert.h>
-#include <bits/stdint-intn.h>
 #include <stdio.h>
 
 #include "../../../src/interpreter/cpu/cpu.h"
