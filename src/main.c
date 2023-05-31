@@ -62,7 +62,6 @@ int main(int argc, const char **argv) {
     usage_error(program, "Expected argument like: -c -f", option);
     return -1;
   }
-  printf("%s %s\n", input_file, option);
 
   switch (option[1]) {
   case 'c': {
