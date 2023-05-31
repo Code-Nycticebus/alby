@@ -176,6 +176,54 @@ static ParserResult parse_sub(Parser *parser) {
                    "Second operant has to be a i64 literal or a register"));
 }
 
+static ParserResult parse_mul(Parser *parser) {
+  Token reg = lexer_next(&parser->lexer);
+  if (!token_is_register(reg.kind)) {
+    return ResultErr(
+        parser_error(parser, reg, "First operant has to be a register"));
+  }
+
+  EXPECT_TOKEN(parser, TOKEN_DEL_COMMA, "Expected comma delimiter");
+
+  Token second_operant = lexer_next(&parser->lexer);
+  if (token_is_register(second_operant.kind)) {
+    return ResultOk(cpu_inst_i64_mulr(reg.kind - TOKEN_REGISTER_1,
+                                      second_operant.kind - TOKEN_REGISTER_1));
+  }
+  if (second_operant.kind == TOKEN_LIT_I64) {
+    return ResultOk(cpu_inst_i64_mul(reg.kind - TOKEN_REGISTER_1,
+                                     parse_i64(second_operant)));
+  }
+
+  return ResultErr(
+      parser_error(parser, second_operant,
+                   "Second operant has to be a i64 literal or a register"));
+}
+
+static ParserResult parse_div(Parser *parser) {
+  Token reg = lexer_next(&parser->lexer);
+  if (!token_is_register(reg.kind)) {
+    return ResultErr(
+        parser_error(parser, reg, "First operant has to be a register"));
+  }
+
+  EXPECT_TOKEN(parser, TOKEN_DEL_COMMA, "Expected comma delimiter");
+
+  Token second_operant = lexer_next(&parser->lexer);
+  if (token_is_register(second_operant.kind)) {
+    return ResultOk(cpu_inst_i64_divr(reg.kind - TOKEN_REGISTER_1,
+                                      second_operant.kind - TOKEN_REGISTER_1));
+  }
+  if (second_operant.kind == TOKEN_LIT_I64) {
+    return ResultOk(cpu_inst_i64_div(reg.kind - TOKEN_REGISTER_1,
+                                     parse_i64(second_operant)));
+  }
+
+  return ResultErr(
+      parser_error(parser, second_operant,
+                   "Second operant has to be a i64 literal or a register"));
+}
+
 static ParserResult parse_push(Parser *parser) {
   Token reg = lexer_next(&parser->lexer);
 
@@ -216,28 +264,18 @@ static ParserResult parse_cmp(Parser *parser) {
 
 static ParserResult parse_jmp(Parser *parser) {
   Token ptr = lexer_next(&parser->lexer);
-  if (ptr.kind != TOKEN_LIT_I64) {
-    return ResultErr(
-        parser_error(parser, ptr, "jump address has to be a literal integer"));
+
+  if (ptr.kind == TOKEN_LIT_I64) {
+    return ResultOk(cpu_inst_jmp(parse_i64(ptr)));
   }
 
-  // TODO error handling on jump address
-  size_t jmp_address = parse_i64(ptr);
-
-  return ResultOk(cpu_inst_jmp(jmp_address));
-}
-
-static ParserResult parse_jge(Parser *parser) {
-  Token ptr = lexer_next(&parser->lexer);
-  if (ptr.kind != TOKEN_LIT_I64) {
-    return ResultErr(
-        parser_error(parser, ptr, "jump address has to be a literal integer"));
+  if (ptr.kind == TOKEN_SYMBOL) {
+    return ResultErr(parser_error(
+        parser, ptr, "symbol as jump values are not implemented yet!"));
   }
 
-  // TODO error handling on jump address
-  size_t jmp_address = parse_i64(ptr);
-
-  return ResultOk(cpu_inst_jge(jmp_address));
+  return ResultErr(
+      parser_error(parser, ptr, "jump address has to be a literal integer"));
 }
 
 ParserResult parser_next(Parser *parser) {
@@ -257,14 +295,17 @@ ParserResult parser_next(Parser *parser) {
   case TOKEN_OP_SUB:
     return parse_sub(parser);
 
+  case TOKEN_OP_MUL:
+    return parse_mul(parser);
+
+  case TOKEN_OP_DIV:
+    return parse_div(parser);
+
   case TOKEN_CMP:
     return parse_cmp(parser);
 
   case TOKEN_JMP:
     return parse_jmp(parser);
-
-  case TOKEN_JGE:
-    return parse_jge(parser);
 
   case TOKEN_DEBUG:
     return ResultOk(cpu_inst_debug());
