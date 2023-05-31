@@ -8,6 +8,8 @@
 #include "../../../src/interpreter/cpu/cpu_inst.h"
 #include "interpreter/cpu/cpu_defines.h"
 
+
+
 #define OFFSET 9
 
 char msg[] = "Fuck you\0"
@@ -28,9 +30,9 @@ int main(void) {
 
   CpuInstruction program[] = {
       cpu_inst_i64_push(-9223372036854775807), // mov b, 1;
-
-      cpu_inst_i64_mov(CPU_R2, (int64_t)&cpu.stack[0]),
-      cpu_inst_i64_mov(CPU_R3, (int64_t)&cpu.stack[OFFSET]),
+      cpu_inst_i64_mov(CPU_R5, 0xcafebabe0420),
+      cpu_inst_i64_mov(CPU_R2, (uintptr_t)&cpu.stack[0]),
+      cpu_inst_i64_mov(CPU_R3, (uintptr_t)&cpu.stack[OFFSET]),
 
       cpu_inst_i64_pop(CPU_R4),
       cpu_inst_i64_sub(CPU_R4, 1),
