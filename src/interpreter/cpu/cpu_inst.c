@@ -1,6 +1,5 @@
 
 #include "cpu_inst.h"
-#include <bits/stdint-intn.h>
 
 CpuInstruction cpu_inst_i64_mov(const Register reg, const int64_t value) {
   return (CpuInstruction){
