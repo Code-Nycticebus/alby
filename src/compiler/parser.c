@@ -28,7 +28,7 @@ static ParserError parser_error(const Parser *parser, const Token tk,
 
 static int64_t parse_i64(Token tk) {
   assert(tk.kind == TOKEN_LIT_I64);
-  return strtoul(tk.token, NULL, 0);
+  return strtoll(tk.token, NULL, 0);
 }
 
 static ParserResult parse_exit(Parser *parser) {

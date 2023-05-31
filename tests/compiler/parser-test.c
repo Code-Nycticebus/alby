@@ -8,6 +8,11 @@
 #include "interpreter/cpu/cpu_defines.h"
 #include "lexer/lexer.h"
 
+#define BIG_ASS_NUMBER 0xAABBCCDDEEFF
+
+#define _str(x) #x
+#define STR(x) _str(x)
+
 #define NEXT(__parser_result, __parser)                                        \
   do {                                                                         \
     __parser_result = parser_next(&__parser);                                  \
@@ -22,7 +27,8 @@
 
 int main(void) {
   const char str[] = "mov r2, 34\n"
-                     "add r2, 35\n";
+                     "add r2, 35\n"
+		     "push "STR(BIG_ASS_NUMBER);
 
   Parser p = {
       .filename = "memory",
@@ -40,6 +46,12 @@ int main(void) {
   NEXT(pr, p);
   assert(pr.value.ok.operation == CPU_OP_ADDI &&
          "Parser did not parse operation correctly");
+
+  NEXT(pr, p);
+  assert(pr.value.ok.operation == CPU_OP_PUSHI &&
+         "Parser did not parse operation correctly");
+
+  assert(pr.value.ok.value1.i64 == BIG_ASS_NUMBER && "Did not parse the big number correctly");
 
   NEXT(pr, p);
   assert(p.eof == true && "EOF should be reached!");
