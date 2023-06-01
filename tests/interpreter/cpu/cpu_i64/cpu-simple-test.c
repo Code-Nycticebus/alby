@@ -1,8 +1,8 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "../../../src/interpreter/cpu/cpu.h"
-#include "../../../src/interpreter/cpu/cpu_instructions.h"
+#include "../../../../src/interpreter/cpu/cpu.h"
+#include "../../../../src/interpreter/cpu/cpu_instructions.h"
 
 enum Variables {
   A = sizeof(int64_t) * 0,

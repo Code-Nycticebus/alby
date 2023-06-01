@@ -1,8 +1,8 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "../../../src/interpreter/cpu/cpu.h"
-#include "../../../src/interpreter/cpu/cpu_instructions.h"
+#include "../../../../src/interpreter/cpu/cpu.h"
+#include "../../../../src/interpreter/cpu/cpu_instructions.h"
 #define loop_start 3
 #define loop_end 12
 #define program_size 14

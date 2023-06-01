@@ -1,8 +1,8 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "../../../src/interpreter/cpu/cpu.h"
-#include "../../../src/interpreter/cpu/cpu_instructions.h"
+#include "../../../../src/interpreter/cpu/cpu.h"
+#include "../../../../src/interpreter/cpu/cpu_instructions.h"
 
 const int64_t max_iterations = 0x1ff;
 
