@@ -141,15 +141,7 @@ static ParserResult parse_math(Parser *parser, MathInstructionFunctions fns) {
   inst_i64_fn *inst_i_fn = fns.i64;
   inst_i64r_fn *inst_r_fn = fns.i64r;
 
-  if (!token_is_register(reg.kind)) {
-    return ResultErr(
-        parser_error(parser, reg, "First operant has to be a register"));
-  }
-
-  EXPECT_TOKEN(parser, TOKEN_DEL_COMMA, "Expected comma delimiter");
-
-  Token second_operant = lexer_next(&parser->lexer);
-  if (second_operant.kind == TOKEN_DEL_LSQUARE) {
+  if (reg.kind == TOKEN_DEL_LSQUARE) {
     Token size_tk = lexer_next(&parser->lexer);
     if (size_tk.kind != TOKEN_LIT_I64) {
       return ResultErr(
@@ -168,8 +160,16 @@ static ParserResult parse_math(Parser *parser, MathInstructionFunctions fns) {
 
     EXPECT_TOKEN(parser, TOKEN_DEL_RSQUARE, "Expected closing bracket");
 
-    second_operant = lexer_next(&parser->lexer);
+    reg = lexer_next(&parser->lexer);
   }
+
+  if (!token_is_register(reg.kind)) {
+    return ResultErr(
+        parser_error(parser, reg, "First operant has to be a register"));
+  }
+  EXPECT_TOKEN(parser, TOKEN_DEL_COMMA, "Expected comma delimiter");
+
+  Token second_operant = lexer_next(&parser->lexer);
 
   if (token_is_register(second_operant.kind)) {
     return ResultOk(inst_r_fn(reg.kind - TOKEN_REGISTER_1,
