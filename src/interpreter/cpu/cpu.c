@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "cpu_inst.h"
+#include "cpu_instructions.h"
 #include "cpu_op.h"
 
 int cpu_run_program(Cpu *cpu, const CpuInstruction *program,

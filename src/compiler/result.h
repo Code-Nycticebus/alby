@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "interpreter/cpu/cpu_inst.h"
+#include "interpreter/cpu/cpu_instructions.h"
 #include "lexer/token.h"
 
 typedef struct ParserError {

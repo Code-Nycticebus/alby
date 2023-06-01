@@ -4,7 +4,7 @@
 
 #include "result.h"
 
-#include "interpreter/cpu/cpu_inst.h"
+#include "interpreter/cpu/cpu_instructions.h"
 #include "lexer/lexer.h"
 
 typedef struct Parser {

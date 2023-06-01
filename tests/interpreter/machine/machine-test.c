@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 #include "../../../src/interpreter/cpu/cpu.h"
-#include "../../../src/interpreter/cpu/cpu_inst.h"
+#include "../../../src/interpreter/cpu/cpu_instructions.h"
 #include "interpreter/cpu/cpu_defines.h"
 
 #define OFFSET 9

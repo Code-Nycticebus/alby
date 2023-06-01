@@ -6,8 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../interpreter/cpu/cpu.h"
-#include "../interpreter/cpu/cpu_inst.h"
+#include "cpu/cpu.h"
+#include "cpu/cpu_instructions.h"
 
 int alby_vm(const char *filename) {
   FILE *input = fopen(filename, "rb");
