@@ -11,20 +11,11 @@
 typedef struct CpuInstruction CpuInstruction;
 
 typedef enum CpuOp {
+  /****************
+   *   Generic    *
+   ****************/
+
   CPU_OP_NOP,
-
-  /* Memory */
-  CPU_OP_MOVI,
-  CPU_OP_MOVR,
-  CPU_OP_MOVS,
-
-  CPU_OP_PUSHI,
-  CPU_OP_PUSHR,
-
-  CPU_OP_SMOVI,
-  CPU_OP_SMOVR,
-
-  CPU_OP_POP,
 
   /* Program flow */
   CPU_OP_JMP,
@@ -33,27 +24,81 @@ typedef enum CpuOp {
   CPU_OP_JLE,
   CPU_OP_JG,
   CPU_OP_JGE,
-  CPU_OP_CMPI,
-  CPU_OP_CMPR,
-
-  /* Math */
-  CPU_OP_ADDI,
-  CPU_OP_ADDR,
-
-  CPU_OP_SUBI,
-  CPU_OP_SUBR,
-
-  CPU_OP_MULI,
-  CPU_OP_MULR,
-
-  CPU_OP_DIVI,
-  CPU_OP_DIVR,
 
   /* Util */
+
   CPU_OP_SYSCALL,
   CPU_OP_DEBUG,
 
   CPU_OP_EXIT,
+
+  /****************
+   *     I64      *
+   ****************/
+
+  /* Memory */
+
+  CPU_OP_I64_MOV,
+  CPU_OP_I64_MOVR,
+  CPU_OP_I64_MOVS,
+
+  CPU_OP_I64_PUSHI,
+  CPU_OP_I64_PUSHR,
+
+  CPU_OP_I64_SMOVI,
+  CPU_OP_I64_SMOVR,
+
+  CPU_OP_I64_POP,
+
+  CPU_OP_I64_CMPI,
+  CPU_OP_I64_CMPR,
+
+  /* Math */
+  CPU_OP_I64_ADDI,
+  CPU_OP_I64_ADDR,
+
+  CPU_OP_I64_SUBI,
+  CPU_OP_I64_SUBR,
+
+  CPU_OP_I64_MULI,
+  CPU_OP_I64_MULR,
+
+  CPU_OP_I64_DIVI,
+  CPU_OP_I64_DIVR,
+
+  /****************
+   *     I8      *
+   ****************/
+
+  /* Memory */
+
+  CPU_OP_I8_MOV,
+  CPU_OP_I8_MOVR,
+  CPU_OP_I8_MOVS,
+
+  CPU_OP_I8_PUSHI,
+  CPU_OP_I8_PUSHR,
+
+  CPU_OP_I8_SMOVI,
+  CPU_OP_I8_SMOVR,
+
+  CPU_OP_I8_POP,
+
+  CPU_OP_I8_CMPI,
+  CPU_OP_I8_CMPR,
+
+  /* Math */
+  CPU_OP_I8_ADDI,
+  CPU_OP_I8_ADDR,
+
+  CPU_OP_I8_SUBI,
+  CPU_OP_I8_SUBR,
+
+  CPU_OP_I8_MULI,
+  CPU_OP_I8_MULR,
+
+  CPU_OP_I8_DIVI,
+  CPU_OP_I8_DIVR,
 } CpuOp;
 
 typedef enum Register {

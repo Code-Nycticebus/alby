@@ -28,12 +28,12 @@
 
 static int test_mov(Parser *p, ParserResult *pr) {
   NEXT(pr, p);
-  assert(pr->value.ok.operation == CPU_OP_MOVI &&
+  assert(pr->value.ok.operation == CPU_OP_I64_MOV &&
          "Parser did not parse operation correctly");
   assert(pr->value.ok.value2.i64 == 34 &&
          "Parser did not parse the integer correctly");
   NEXT(pr, p);
-  assert(pr->value.ok.operation == CPU_OP_MOVR &&
+  assert(pr->value.ok.operation == CPU_OP_I64_MOVR &&
          "Parser did not parse correctly");
   assert(pr->value.ok.value1.r == CPU_R1 && "Parser parsed wrong register!");
   assert(pr->value.ok.value2.r == CPU_R2 &&
@@ -47,12 +47,12 @@ static int test_mov(Parser *p, ParserResult *pr) {
 
 static int test_add(Parser *p, ParserResult *pr) {
   NEXT(pr, p);
-  assert(pr->value.ok.operation == CPU_OP_ADDI &&
+  assert(pr->value.ok.operation == CPU_OP_I64_ADDI &&
          "Parser did not parse operation correctly");
   assert(pr->value.ok.value2.i64 == 35 &&
          "Parser did not parse the integer correctly");
   NEXT(pr, p);
-  assert(pr->value.ok.operation == CPU_OP_ADDR &&
+  assert(pr->value.ok.operation == CPU_OP_I64_ADDR &&
          "Parser did not parse operation correctly");
   assert(pr->value.ok.value1.r == CPU_R1 && "Parser parsed wrong register!");
   assert(pr->value.ok.value2.r == CPU_R2 &&
@@ -66,12 +66,12 @@ static int test_add(Parser *p, ParserResult *pr) {
 
 static int test_sub(Parser *p, ParserResult *pr) {
   NEXT(pr, p);
-  assert(pr->value.ok.operation == CPU_OP_SUBI &&
+  assert(pr->value.ok.operation == CPU_OP_I64_SUBI &&
          "Parser did not parse operation correctly");
   assert(pr->value.ok.value2.i64 == 69 &&
          "Parser did not parse the integer correctly");
   NEXT(pr, p);
-  assert(pr->value.ok.operation == CPU_OP_SUBR &&
+  assert(pr->value.ok.operation == CPU_OP_I64_SUBR &&
          "Parser did not parse operation correctly");
   assert(pr->value.ok.value1.r == CPU_R1 && "Parser parsed wrong register!");
   assert(pr->value.ok.value2.r == CPU_R2 &&
@@ -84,12 +84,12 @@ static int test_sub(Parser *p, ParserResult *pr) {
 
 static int test_mul(Parser *p, ParserResult *pr) {
   NEXT(pr, p);
-  assert(pr->value.ok.operation == CPU_OP_MULI &&
+  assert(pr->value.ok.operation == CPU_OP_I64_MULI &&
          "Parser did not parse operation correctly");
   assert(pr->value.ok.value2.i64 == 69 &&
          "Parser did not parse the integer correctly");
   NEXT(pr, p);
-  assert(pr->value.ok.operation == CPU_OP_MULR &&
+  assert(pr->value.ok.operation == CPU_OP_I64_MULR &&
          "Parser did not parse operation correctly");
   assert(pr->value.ok.value1.r == CPU_R1 && "Parser parsed wrong register!");
   assert(pr->value.ok.value2.r == CPU_R2 &&
@@ -103,12 +103,12 @@ static int test_mul(Parser *p, ParserResult *pr) {
 
 static int test_div(Parser *p, ParserResult *pr) {
   NEXT(pr, p);
-  assert(pr->value.ok.operation == CPU_OP_DIVI &&
+  assert(pr->value.ok.operation == CPU_OP_I64_DIVI &&
          "Parser did not parse operation correctly");
   assert(pr->value.ok.value2.i64 == 69 &&
          "Parser did not parse the integer correctly");
   NEXT(pr, p);
-  assert(pr->value.ok.operation == CPU_OP_DIVR &&
+  assert(pr->value.ok.operation == CPU_OP_I64_DIVR &&
          "Parser did not parse operation correctly");
   assert(pr->value.ok.value1.r == CPU_R1 && "Parser parsed wrong register!");
   assert(pr->value.ok.value2.r == CPU_R2 &&
@@ -122,11 +122,11 @@ static int test_div(Parser *p, ParserResult *pr) {
 
 static int test_push(Parser *p, ParserResult *pr) {
   NEXT(pr, p);
-  assert(pr->value.ok.operation == CPU_OP_PUSHR &&
+  assert(pr->value.ok.operation == CPU_OP_I64_PUSHR &&
          "Parser did not parse operation correctly");
   assert(pr->value.ok.value1.r == CPU_R1 && "Parser parsed wrong register!");
   NEXT(pr, p);
-  assert(pr->value.ok.operation == CPU_OP_PUSHI &&
+  assert(pr->value.ok.operation == CPU_OP_I64_PUSHI &&
          "Parser did not parse operation correctly");
   assert(pr->value.ok.value1.i64 == BIG_ASS_NUMBER &&
          "Did not parse the big number correctly");

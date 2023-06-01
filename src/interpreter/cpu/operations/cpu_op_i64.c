@@ -20,7 +20,7 @@ CpuError cpu_op_i64_mov(Cpu *cpu, Register reg, int64_t value) {
 }
 
 CpuError cpu_op_i64_movr(Cpu *cpu, Register reg1, Register reg2) {
-  cpu->reg[reg1] = cpu->reg[reg2];
+  cpu->reg[reg1].i64 = cpu->reg[reg2].i64;
   return CPU_ERR_OK;
 }
 
@@ -28,7 +28,7 @@ CpuError cpu_op_i64_movs(Cpu *cpu, Register reg, size_t stack_offset) {
   if (cpu->rsp && cpu->rsp < stack_offset) {
     return CPU_ERR_STACK_UNDERFLOW;
   }
-  cpu->reg[reg] = *(Word *)&cpu->stack[stack_offset];
+  cpu->reg[reg].i64 = *(int64_t *)&cpu->stack[stack_offset];
   return CPU_ERR_OK;
 }
 

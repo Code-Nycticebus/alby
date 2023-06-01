@@ -50,3 +50,31 @@ CpuError cpu_op_i64_mul(Cpu *cpu, Register reg, int64_t value);
 CpuError cpu_op_i64_mulr(Cpu *cpu, Register reg1, Register reg2);
 CpuError cpu_op_i64_div(Cpu *cpu, Register reg, int64_t value);
 CpuError cpu_op_i64_divr(Cpu *cpu, Register reg1, Register reg2);
+
+/**********************
+ *        i8         *
+ **********************/
+
+/* Memory */
+
+CpuError cpu_op_i8_mov(Cpu *cpu, Register reg, int8_t value);
+CpuError cpu_op_i8_movr(Cpu *cpu, Register reg1, Register reg2);
+CpuError cpu_op_i8_movs(Cpu *cpu, Register reg, size_t stack_offset);
+CpuError cpu_op_i8_push(Cpu *cpu, int8_t value);
+CpuError cpu_op_i8_pushr(Cpu *cpu, Register reg);
+CpuError cpu_op_i8_smov(Cpu *cpu, size_t offset, int8_t value);
+CpuError cpu_op_i8_smovr(Cpu *cpu, size_t offset, Register reg);
+CpuError cpu_op_i8_pop(Cpu *cpu, Register reg);
+CpuError cpu_op_i8_cmp(Cpu *cpu, Register reg, int8_t value);
+CpuError cpu_op_i8_cmpr(Cpu *cpu, Register reg1, Register reg2);
+
+/* Math */
+
+CpuError cpu_op_i8_add(Cpu *cpu, Register reg, int8_t value);
+CpuError cpu_op_i8_addr(Cpu *cpu, Register reg1, Register reg2);
+CpuError cpu_op_i8_sub(Cpu *cpu, Register reg, int8_t value);
+CpuError cpu_op_i8_subr(Cpu *cpu, Register reg1, Register reg2);
+CpuError cpu_op_i8_mul(Cpu *cpu, Register reg, int8_t value);
+CpuError cpu_op_i8_mulr(Cpu *cpu, Register reg1, Register reg2);
+CpuError cpu_op_i8_div(Cpu *cpu, Register reg, int8_t value);
+CpuError cpu_op_i8_divr(Cpu *cpu, Register reg1, Register reg2);

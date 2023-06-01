@@ -13,25 +13,11 @@ CpuError cpu_step(Cpu *cpu, const CpuInstruction *inst) {
   case CPU_OP_NOP:
     return CPU_ERR_OK;
 
-    /* Memory */
-  case CPU_OP_MOVI:
-    return cpu_op_i64_mov(cpu, inst->value1.r, inst->value2.i64);
-  case CPU_OP_MOVR:
-    return cpu_op_i64_movr(cpu, inst->value1.r, inst->value2.u64);
-  case CPU_OP_MOVS:
-    return cpu_op_i64_movs(cpu, inst->value1.r, inst->value2.size_t);
-  case CPU_OP_PUSHI:
-    return cpu_op_i64_push(cpu, inst->value1.i64);
-  case CPU_OP_PUSHR:
-    return cpu_op_i64_pushr(cpu, inst->value1.r);
-  case CPU_OP_SMOVI:
-    return cpu_op_i64_smov(cpu, inst->value1.r, inst->value2.i64);
-  case CPU_OP_SMOVR:
-    return cpu_op_i64_smovr(cpu, inst->value1.u64, inst->value2.r);
-  case CPU_OP_POP:
-    return cpu_op_i64_pop(cpu, inst->value1.r);
+  /*********************
+   *      Generic      *
+   *********************/
 
-    /* Program flow */
+  /* Program flow */
   case CPU_OP_JMP:
     return cpu_op_jmp(cpu, inst->value1.size_t);
   case CPU_OP_JE:
@@ -44,28 +30,6 @@ CpuError cpu_step(Cpu *cpu, const CpuInstruction *inst) {
     return cpu_op_jg(cpu, inst->value1.size_t);
   case CPU_OP_JGE:
     return cpu_op_jge(cpu, inst->value1.size_t);
-  case CPU_OP_CMPI:
-    return cpu_op_i64_cmp(cpu, inst->value1.r, inst->value2.i64);
-  case CPU_OP_CMPR:
-    return cpu_op_i64_cmpr(cpu, inst->value1.r, inst->value2.r);
-
-  /* Math */
-  case CPU_OP_ADDI:
-    return cpu_op_i64_add(cpu, inst->value1.r, inst->value2.i64);
-  case CPU_OP_ADDR:
-    return cpu_op_i64_addr(cpu, inst->value1.r, inst->value2.r);
-  case CPU_OP_SUBI:
-    return cpu_op_i64_sub(cpu, inst->value1.r, inst->value2.i64);
-  case CPU_OP_SUBR:
-    return cpu_op_i64_subr(cpu, inst->value1.r, inst->value2.r);
-  case CPU_OP_MULI:
-    return cpu_op_i64_mul(cpu, inst->value1.r, inst->value2.i64);
-  case CPU_OP_MULR:
-    return cpu_op_i64_mulr(cpu, inst->value1.r, inst->value2.r);
-  case CPU_OP_DIVI:
-    return cpu_op_i64_div(cpu, inst->value1.r, inst->value2.i64);
-  case CPU_OP_DIVR:
-    return cpu_op_i64_divr(cpu, inst->value1.r, inst->value2.r);
 
     /* Utils */
 
@@ -77,6 +41,96 @@ CpuError cpu_step(Cpu *cpu, const CpuInstruction *inst) {
 
   case CPU_OP_EXIT:
     return cpu_op_exit(cpu, inst->value1);
+
+  /*********************
+   *        I64        *
+   *********************/
+
+  /* Memory */
+  case CPU_OP_I64_MOV:
+    return cpu_op_i64_mov(cpu, inst->value1.r, inst->value2.i64);
+  case CPU_OP_I64_MOVR:
+    return cpu_op_i64_movr(cpu, inst->value1.r, inst->value2.r);
+  case CPU_OP_I64_MOVS:
+    return cpu_op_i64_movs(cpu, inst->value1.r, inst->value2.size_t);
+  case CPU_OP_I64_PUSHI:
+    return cpu_op_i64_push(cpu, inst->value1.i64);
+  case CPU_OP_I64_PUSHR:
+    return cpu_op_i64_pushr(cpu, inst->value1.r);
+  case CPU_OP_I64_SMOVI:
+    return cpu_op_i64_smov(cpu, inst->value1.r, inst->value2.i64);
+  case CPU_OP_I64_SMOVR:
+    return cpu_op_i64_smovr(cpu, inst->value1.size_t, inst->value2.r);
+  case CPU_OP_I64_POP:
+    return cpu_op_i64_pop(cpu, inst->value1.r);
+
+  case CPU_OP_I64_CMPI:
+    return cpu_op_i64_cmp(cpu, inst->value1.r, inst->value2.i64);
+  case CPU_OP_I64_CMPR:
+    return cpu_op_i64_cmpr(cpu, inst->value1.r, inst->value2.r);
+
+  /* Math */
+  case CPU_OP_I64_ADDI:
+    return cpu_op_i64_add(cpu, inst->value1.r, inst->value2.i64);
+  case CPU_OP_I64_ADDR:
+    return cpu_op_i64_addr(cpu, inst->value1.r, inst->value2.r);
+  case CPU_OP_I64_SUBI:
+    return cpu_op_i64_sub(cpu, inst->value1.r, inst->value2.i64);
+  case CPU_OP_I64_SUBR:
+    return cpu_op_i64_subr(cpu, inst->value1.r, inst->value2.r);
+  case CPU_OP_I64_MULI:
+    return cpu_op_i64_mul(cpu, inst->value1.r, inst->value2.i64);
+  case CPU_OP_I64_MULR:
+    return cpu_op_i64_mulr(cpu, inst->value1.r, inst->value2.r);
+  case CPU_OP_I64_DIVI:
+    return cpu_op_i64_div(cpu, inst->value1.r, inst->value2.i64);
+  case CPU_OP_I64_DIVR:
+    return cpu_op_i64_divr(cpu, inst->value1.r, inst->value2.r);
+
+  /*********************
+   *        I8        *
+   *********************/
+
+  /* Memory */
+  case CPU_OP_I8_MOV:
+    return cpu_op_i8_mov(cpu, inst->value1.r, inst->value2.i8);
+  case CPU_OP_I8_MOVR:
+    return cpu_op_i8_movr(cpu, inst->value1.r, inst->value2.r);
+  case CPU_OP_I8_MOVS:
+    return cpu_op_i8_movs(cpu, inst->value1.r, inst->value2.size_t);
+  case CPU_OP_I8_PUSHI:
+    return cpu_op_i8_push(cpu, inst->value1.i8);
+  case CPU_OP_I8_PUSHR:
+    return cpu_op_i8_pushr(cpu, inst->value1.r);
+  case CPU_OP_I8_SMOVI:
+    return cpu_op_i8_smov(cpu, inst->value1.r, inst->value2.i8);
+  case CPU_OP_I8_SMOVR:
+    return cpu_op_i8_smovr(cpu, inst->value1.i8, inst->value2.r);
+  case CPU_OP_I8_POP:
+    return cpu_op_i8_pop(cpu, inst->value1.r);
+
+  case CPU_OP_I8_CMPI:
+    return cpu_op_i8_cmp(cpu, inst->value1.r, inst->value2.i8);
+  case CPU_OP_I8_CMPR:
+    return cpu_op_i8_cmpr(cpu, inst->value1.r, inst->value2.r);
+
+  /* Math */
+  case CPU_OP_I8_ADDI:
+    return cpu_op_i8_add(cpu, inst->value1.r, inst->value2.i8);
+  case CPU_OP_I8_ADDR:
+    return cpu_op_i8_addr(cpu, inst->value1.r, inst->value2.r);
+  case CPU_OP_I8_SUBI:
+    return cpu_op_i8_sub(cpu, inst->value1.r, inst->value2.i8);
+  case CPU_OP_I8_SUBR:
+    return cpu_op_i8_subr(cpu, inst->value1.r, inst->value2.r);
+  case CPU_OP_I8_MULI:
+    return cpu_op_i8_mul(cpu, inst->value1.r, inst->value2.i8);
+  case CPU_OP_I8_MULR:
+    return cpu_op_i8_mulr(cpu, inst->value1.r, inst->value2.r);
+  case CPU_OP_I8_DIVI:
+    return cpu_op_i8_div(cpu, inst->value1.r, inst->value2.i8);
+  case CPU_OP_I8_DIVR:
+    return cpu_op_i8_divr(cpu, inst->value1.r, inst->value2.r);
   }
 
   return CPU_ERR_INVALID_INSTRUCTION;
