@@ -251,11 +251,12 @@ static ParserResult parse_cmp(Parser *parser) {
                    "Second operant has to be a i64 literal or a register"));
 }
 
-static ParserResult parse_jmp(Parser *parser) {
+static ParserResult parse_jmps(Parser *parser,
+                               CpuInstruction (*jmp_fn)(size_t)) {
   Token ptr = lexer_next(&parser->lexer);
 
   if (ptr.kind == TOKEN_LIT_I64) {
-    return ResultOk(cpu_inst_jmp(parse_i64(ptr)));
+    return ResultOk(jmp_fn(parse_i64(ptr)));
   }
 
   if (ptr.kind == TOKEN_SYMBOL) {
@@ -265,6 +266,25 @@ static ParserResult parse_jmp(Parser *parser) {
 
   return ResultErr(
       parser_error(parser, ptr, "jump address has to be a literal integer"));
+}
+
+static ParserResult parse_jmp(Parser *parser) {
+  return parse_jmps(parser, cpu_inst_jmp);
+}
+static ParserResult parse_je(Parser *parser) {
+  return parse_jmps(parser, cpu_inst_je);
+}
+static ParserResult parse_jl(Parser *parser) {
+  return parse_jmps(parser, cpu_inst_jl);
+}
+static ParserResult parse_jle(Parser *parser) {
+  return parse_jmps(parser, cpu_inst_jle);
+}
+static ParserResult parse_jg(Parser *parser) {
+  return parse_jmps(parser, cpu_inst_jg);
+}
+static ParserResult parse_jge(Parser *parser) {
+  return parse_jmps(parser, cpu_inst_jge);
 }
 
 ParserResult parser_next(Parser *parser) {
@@ -291,6 +311,16 @@ ParserResult parser_next(Parser *parser) {
 
   case TOKEN_JMP:
     return parse_jmp(parser);
+  case TOKEN_JE:
+    return parse_je(parser);
+  case TOKEN_JL:
+    return parse_jl(parser);
+  case TOKEN_JLE:
+    return parse_jle(parser);
+  case TOKEN_JG:
+    return parse_jg(parser);
+  case TOKEN_JGE:
+    return parse_jge(parser);
 
   case TOKEN_DEBUG:
     return ResultOk(cpu_inst_debug());

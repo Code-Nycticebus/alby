@@ -133,12 +133,17 @@ static int test_push(Parser *p, ParserResult *pr) {
   return 0;
 }
 
-#define TEST_JMP_STR "jmp 0\n"
-// "je LABEL\n" "jl LABEL\n" "jle LABEL\n" "jg LABEL\n"     "jge LABEL\n"
+#define TEST_JMP_STR                                                           \
+  "jmp 0\n"                                                                    \
+  "je 1\n"                                                                     \
+  "jl 2\n"                                                                     \
+  "jle 3\n"                                                                    \
+  "jg 4\n"                                                                     \
+  "jge 5\n"
 
 static int test_jmp(Parser *p, ParserResult *pr) {
   CpuOp ops[] = {
-      CPU_OP_JMP, // CPU_OP_JE, CPU_OP_JL, CPU_OP_JLE, CPU_OP_JG, CPU_OP_JGE,
+      CPU_OP_JMP, CPU_OP_JE, CPU_OP_JL, CPU_OP_JLE, CPU_OP_JG, CPU_OP_JGE,
   };
 
   size_t s = sizeof(ops) / sizeof(ops[0]);
