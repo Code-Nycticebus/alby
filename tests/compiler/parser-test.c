@@ -42,7 +42,7 @@ static int test_mov(Parser *p, ParserResult *pr) {
 }
 
 #define TEST_ADD_STR                                                           \
-  "add r2, 35\n"                                                               \
+  "add r2, [64] 35\n"                                                          \
   "add r1, r2\n"
 
 static int test_add(Parser *p, ParserResult *pr) {

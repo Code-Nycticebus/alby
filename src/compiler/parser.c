@@ -128,8 +128,19 @@ static ParserResult parse_mov(Parser *parser) {
       "Second operant has to be an i64 literal, an address or a register"));
 }
 
-static ParserResult parse_add(Parser *parser) {
+typedef CpuInstruction inst_i64_fn(Register, int64_t);
+typedef CpuInstruction inst_i64r_fn(Register, Register);
+
+typedef struct MathInstructionFunctions {
+  inst_i64_fn *i64;
+  inst_i64r_fn *i64r;
+} MathInstructionFunctions;
+
+static ParserResult parse_math(Parser *parser, MathInstructionFunctions fns) {
   Token reg = lexer_next(&parser->lexer);
+  inst_i64_fn *inst_i_fn = fns.i64;
+  inst_i64r_fn *inst_r_fn = fns.i64r;
+
   if (!token_is_register(reg.kind)) {
     return ResultErr(
         parser_error(parser, reg, "First operant has to be a register"));
@@ -138,90 +149,68 @@ static ParserResult parse_add(Parser *parser) {
   EXPECT_TOKEN(parser, TOKEN_DEL_COMMA, "Expected comma delimiter");
 
   Token second_operant = lexer_next(&parser->lexer);
+  if (second_operant.kind == TOKEN_DEL_LSQUARE) {
+    Token size_tk = lexer_next(&parser->lexer);
+    if (size_tk.kind != TOKEN_LIT_I64) {
+      return ResultErr(
+          parser_error(parser, size_tk, "Size has to be a i64 literal"));
+    }
+
+    size_t size = parse_i64(size_tk);
+
+    if (size == sizeof(int64_t) * 8) {
+      inst_i_fn = fns.i64;
+      inst_r_fn = fns.i64r;
+    } else {
+      return ResultErr(
+          parser_error(parser, size_tk, "This size is not implemented"));
+    }
+
+    EXPECT_TOKEN(parser, TOKEN_DEL_RSQUARE, "Expected closing bracket");
+
+    second_operant = lexer_next(&parser->lexer);
+  }
+
   if (token_is_register(second_operant.kind)) {
-    return ResultOk(cpu_inst_i64_addr(reg.kind - TOKEN_REGISTER_1,
-                                      second_operant.kind - TOKEN_REGISTER_1));
+    return ResultOk(inst_r_fn(reg.kind - TOKEN_REGISTER_1,
+                              second_operant.kind - TOKEN_REGISTER_1));
   }
   if (second_operant.kind == TOKEN_LIT_I64) {
-    return ResultOk(cpu_inst_i64_add(reg.kind - TOKEN_REGISTER_1,
-                                     parse_i64(second_operant)));
+    return ResultOk(
+        inst_i_fn(reg.kind - TOKEN_REGISTER_1, parse_i64(second_operant)));
   }
 
   return ResultErr(
       parser_error(parser, second_operant,
                    "Second operant has to be a i64 literal or a register"));
+}
+
+static ParserResult parse_add(Parser *parser) {
+  return parse_math(parser, (MathInstructionFunctions){
+                                .i64 = cpu_inst_i64_add,
+                                .i64r = cpu_inst_i64_addr,
+                            });
 }
 
 static ParserResult parse_sub(Parser *parser) {
-  Token reg = lexer_next(&parser->lexer);
-  if (!token_is_register(reg.kind)) {
-    return ResultErr(
-        parser_error(parser, reg, "First operant has to be a register"));
-  }
-
-  EXPECT_TOKEN(parser, TOKEN_DEL_COMMA, "Expected comma delimiter");
-
-  Token second_operant = lexer_next(&parser->lexer);
-  if (token_is_register(second_operant.kind)) {
-    return ResultOk(cpu_inst_i64_subr(reg.kind - TOKEN_REGISTER_1,
-                                      second_operant.kind - TOKEN_REGISTER_1));
-  }
-  if (second_operant.kind == TOKEN_LIT_I64) {
-    return ResultOk(cpu_inst_i64_sub(reg.kind - TOKEN_REGISTER_1,
-                                     parse_i64(second_operant)));
-  }
-
-  return ResultErr(
-      parser_error(parser, second_operant,
-                   "Second operant has to be a i64 literal or a register"));
+  return parse_math(parser, (MathInstructionFunctions){
+                                .i64 = cpu_inst_i64_sub,
+                                .i64r = cpu_inst_i64_subr,
+                            });
 }
 
 static ParserResult parse_mul(Parser *parser) {
-  Token reg = lexer_next(&parser->lexer);
-  if (!token_is_register(reg.kind)) {
-    return ResultErr(
-        parser_error(parser, reg, "First operant has to be a register"));
-  }
-
-  EXPECT_TOKEN(parser, TOKEN_DEL_COMMA, "Expected comma delimiter");
-
-  Token second_operant = lexer_next(&parser->lexer);
-  if (token_is_register(second_operant.kind)) {
-    return ResultOk(cpu_inst_i64_mulr(reg.kind - TOKEN_REGISTER_1,
-                                      second_operant.kind - TOKEN_REGISTER_1));
-  }
-  if (second_operant.kind == TOKEN_LIT_I64) {
-    return ResultOk(cpu_inst_i64_mul(reg.kind - TOKEN_REGISTER_1,
-                                     parse_i64(second_operant)));
-  }
-
-  return ResultErr(
-      parser_error(parser, second_operant,
-                   "Second operant has to be a i64 literal or a register"));
+  return parse_math(parser, (MathInstructionFunctions){
+                                .i64 = cpu_inst_i64_mul,
+                                .i64r = cpu_inst_i64_mulr,
+                            });
 }
 
 static ParserResult parse_div(Parser *parser) {
-  Token reg = lexer_next(&parser->lexer);
-  if (!token_is_register(reg.kind)) {
-    return ResultErr(
-        parser_error(parser, reg, "First operant has to be a register"));
-  }
-
-  EXPECT_TOKEN(parser, TOKEN_DEL_COMMA, "Expected comma delimiter");
-
-  Token second_operant = lexer_next(&parser->lexer);
-  if (token_is_register(second_operant.kind)) {
-    return ResultOk(cpu_inst_i64_divr(reg.kind - TOKEN_REGISTER_1,
-                                      second_operant.kind - TOKEN_REGISTER_1));
-  }
-  if (second_operant.kind == TOKEN_LIT_I64) {
-    return ResultOk(cpu_inst_i64_div(reg.kind - TOKEN_REGISTER_1,
-                                     parse_i64(second_operant)));
-  }
-
-  return ResultErr(
-      parser_error(parser, second_operant,
-                   "Second operant has to be a i64 literal or a register"));
+  return parse_math(parser, (MathInstructionFunctions){
+                                .i64 = cpu_inst_i64_div,
+                                .i64r = cpu_inst_i64_divr,
+                            });
 }
 
 static ParserResult parse_push(Parser *parser) {
@@ -285,19 +274,15 @@ ParserResult parser_next(Parser *parser) {
 
   case TOKEN_PUSH:
     return parse_push(parser);
-
   case TOKEN_MOV:
     return parse_mov(parser);
 
   case TOKEN_OP_ADD:
     return parse_add(parser);
-
   case TOKEN_OP_SUB:
     return parse_sub(parser);
-
   case TOKEN_OP_MUL:
     return parse_mul(parser);
-
   case TOKEN_OP_DIV:
     return parse_div(parser);
 
