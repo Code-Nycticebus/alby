@@ -1,7 +1,6 @@
 mov r1, 0
-mov r2, 2
 mov r3, 0Xfff 
-add [64] r1, 0x123 
+add [8] r1, 0xf1 
 
 push 0xcafe
 push 0X6f6c6c6548

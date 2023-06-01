@@ -1,8 +1,10 @@
 #include "parser.h"
 #include "interpreter/cpu/cpu_instructions.h"
+#include "lexer/token.h"
 
 #include <assert.h>
 
+#include <limits.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -128,34 +130,53 @@ static ParserResult parse_mov(Parser *parser) {
       "Second operant has to be an i64 literal, an address or a register"));
 }
 
+typedef CpuInstruction inst_r_fn(Register, Register);
 typedef CpuInstruction inst_i64_fn(Register, int64_t);
-typedef CpuInstruction inst_i64r_fn(Register, Register);
+typedef CpuInstruction inst_i8_fn(Register, int8_t);
 
 typedef struct MathInstructionFunctions {
   inst_i64_fn *i64;
-  inst_i64r_fn *i64r;
+  inst_r_fn *i64r;
+
+  inst_i8_fn *i8;
+  inst_r_fn *i8r;
 } MathInstructionFunctions;
+
+static ParserResult inst_i_execute(Parser *parser,
+                                   MathInstructionFunctions *fns, Token size_tk,
+                                   bool reg_or_value, Register reg,
+                                   Token value) {
+  size_t size = parse_i64(size_tk);
+  if (size == sizeof(int64_t) * 8) {
+    return reg_or_value
+               ? ResultOk(fns->i64r(reg, value.kind - TOKEN_REGISTER_1))
+               : ResultOk(fns->i64(reg, parse_i64(value)));
+  }
+  if (size == sizeof(int8_t) * 8) {
+    if (reg_or_value == false) {
+      int64_t i_value = parse_i64(value);
+      if (i_value >= INT8_MAX) {
+        return ResultErr(parser_error(
+            parser, value,
+            "Value is too big for this size.")); // Lazy way because i already
+                                                 // parse the token
+      }
+      return ResultOk(fns->i8(reg, (int8_t)i_value));
+    }
+    return ResultOk(fns->i8r(reg, value.kind - TOKEN_REGISTER_1));
+  }
+  return ResultErr(
+      parser_error(parser, size_tk, "This size is not implemented"));
+}
 
 static ParserResult parse_math(Parser *parser, MathInstructionFunctions fns) {
   Token reg = lexer_next(&parser->lexer);
-  inst_i64_fn *inst_i_fn = fns.i64;
-  inst_i64r_fn *inst_r_fn = fns.i64r;
-
+  Token size_tk = {.kind = TOKEN_LIT_I64, .token = "64", .len = 2};
   if (reg.kind == TOKEN_DEL_LSQUARE) {
-    Token size_tk = lexer_next(&parser->lexer);
+    size_tk = lexer_next(&parser->lexer);
     if (size_tk.kind != TOKEN_LIT_I64) {
       return ResultErr(
           parser_error(parser, size_tk, "Size has to be a i64 literal"));
-    }
-
-    size_t size = parse_i64(size_tk);
-
-    if (size == sizeof(int64_t) * 8) {
-      inst_i_fn = fns.i64;
-      inst_r_fn = fns.i64r;
-    } else {
-      return ResultErr(
-          parser_error(parser, size_tk, "This size is not implemented"));
     }
 
     EXPECT_TOKEN(parser, TOKEN_DEL_RSQUARE, "Expected closing bracket");
@@ -172,12 +193,12 @@ static ParserResult parse_math(Parser *parser, MathInstructionFunctions fns) {
   Token second_operant = lexer_next(&parser->lexer);
 
   if (token_is_register(second_operant.kind)) {
-    return ResultOk(inst_r_fn(reg.kind - TOKEN_REGISTER_1,
-                              second_operant.kind - TOKEN_REGISTER_1));
+    return inst_i_execute(parser, &fns, size_tk, true,
+                          reg.kind - TOKEN_REGISTER_1, second_operant);
   }
   if (second_operant.kind == TOKEN_LIT_I64) {
-    return ResultOk(
-        inst_i_fn(reg.kind - TOKEN_REGISTER_1, parse_i64(second_operant)));
+    return inst_i_execute(parser, &fns, size_tk, false,
+                          reg.kind - TOKEN_REGISTER_1, second_operant);
   }
 
   return ResultErr(
@@ -189,6 +210,8 @@ static ParserResult parse_add(Parser *parser) {
   return parse_math(parser, (MathInstructionFunctions){
                                 .i64 = cpu_inst_i64_add,
                                 .i64r = cpu_inst_i64_addr,
+                                .i8 = cpu_inst_i8_add,
+                                .i8r = cpu_inst_i8_addr,
                             });
 }
 
@@ -196,6 +219,8 @@ static ParserResult parse_sub(Parser *parser) {
   return parse_math(parser, (MathInstructionFunctions){
                                 .i64 = cpu_inst_i64_sub,
                                 .i64r = cpu_inst_i64_subr,
+                                .i8 = cpu_inst_i8_sub,
+                                .i8r = cpu_inst_i8_subr,
                             });
 }
 
@@ -203,6 +228,8 @@ static ParserResult parse_mul(Parser *parser) {
   return parse_math(parser, (MathInstructionFunctions){
                                 .i64 = cpu_inst_i64_mul,
                                 .i64r = cpu_inst_i64_mulr,
+                                .i8 = cpu_inst_i8_mul,
+                                .i8r = cpu_inst_i8_mulr,
                             });
 }
 
@@ -210,6 +237,8 @@ static ParserResult parse_div(Parser *parser) {
   return parse_math(parser, (MathInstructionFunctions){
                                 .i64 = cpu_inst_i64_div,
                                 .i64r = cpu_inst_i64_divr,
+                                .i8 = cpu_inst_i8_div,
+                                .i8r = cpu_inst_i8_mulr,
                             });
 }
 

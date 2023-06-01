@@ -37,7 +37,7 @@ int main(void) {
 
       cpu_inst_i8_mov(CPU_R5, 0x22),
       cpu_inst_i8_mov(CPU_R5, 0x22),
-      cpu_inst_i8_push(0x7F),
+      cpu_inst_i8_push(0x6F),
 
       cpu_inst_debug(), //
       cpu_inst_exit(0),

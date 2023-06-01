@@ -42,14 +42,14 @@ static int test_mov(Parser *p, ParserResult *pr) {
 }
 
 #define TEST_ADD_STR                                                           \
-  "add [64] r2, 35\n"                                                          \
+  "add [64] r2, 69\n"                                                          \
   "add r1, r2\n"
 
 static int test_add(Parser *p, ParserResult *pr) {
   NEXT(pr, p);
   assert(pr->value.ok.operation == CPU_OP_I64_ADDI &&
          "Parser did not parse operation correctly");
-  assert(pr->value.ok.value2.i64 == 35 &&
+  assert(pr->value.ok.value2.i64 == 69 &&
          "Parser did not parse the integer correctly");
   NEXT(pr, p);
   assert(pr->value.ok.operation == CPU_OP_I64_ADDR &&
