@@ -332,15 +332,13 @@ ParserResult parser_next(Parser *parser) {
     parser->eof = true;
     return ResultOk(cpu_inst_exit(0));
 
-    // TODO find a better way to skip newlines!
+  /* Skipping by recursing */
   case TOKEN_DEL_NEWLINE:
     return parser_next(parser);
-
   case TOKEN_COMMENT:
     return parser_next(parser);
 
   default:
-    parser->eof = true;
     return ResultErr(parser_error(parser, tk, "Invalid token!"));
   }
 
