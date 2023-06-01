@@ -2,11 +2,11 @@
 
 #include <assert.h>
 #include <errno.h>
-#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "interpreter/cpu/cpu.h"
 #include "interpreter/cpu/cpu_defines.h"
 #include "lexer/lexer.h"
 #include "parser.h"
@@ -14,9 +14,15 @@
 
 #define BUFFER_SIZE 1024
 
+#if defined(_WIN32) || defined(_WIN64)
+#define HASH_FORMAT "%llx"
+#else
+#define HASH_FORMAT "%lx"
+#endif
+
 static inline uint64_t hash(const char *str) {
   size_t len = strlen(str);
-  uint64_t result = 0;
+  uint64_t result = 1;
   for (uint64_t i = 0; i < len; ++i) {
     result *= len + str[i];
   }
@@ -27,23 +33,27 @@ int compile(const char *in_filename, const char *out_filename) {
   char buffer[BUFFER_SIZE] = {0};
 
   char backup_filename[] = "alby-XXXXXXXXXXXXXXXX"; // Storage for temp filename
-  snprintf(backup_filename, sizeof(backup_filename) - 1, "alby-%" PRIu64,
+  snprintf(backup_filename, sizeof(backup_filename) - 1, "alby-" HASH_FORMAT,
            hash(out_filename));
   rename(out_filename, backup_filename);
 
   FILE *input = fopen(in_filename, "rb");
+  FILE *output = fopen(out_filename, "wb");
+
   if (input == NULL) {
     fprintf(stderr, "Error: Could not open file '%s': %s\n", in_filename,
             strerror(errno));
-    exit(1);
+    goto ERROR;
   }
 
-  FILE *output = fopen(out_filename, "wb");
   if (output == NULL) {
     fprintf(stderr, "Error: Could not open file '%s': %s\n", out_filename,
             strerror(errno));
-    exit(1);
+    goto ERROR;
   }
+
+  Cpu cpu = {0};
+  fwrite(&cpu, sizeof(cpu), 1, output);
 
   size_t bytes_read;
   while ((bytes_read = fread(buffer, sizeof(char), BUFFER_SIZE, input))) {

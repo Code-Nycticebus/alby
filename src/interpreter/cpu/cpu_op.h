@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cpu.h"
+#include "interpreter/cpu/cpu.h"
 
 typedef enum CpuError {
   CPU_ERR_OK,

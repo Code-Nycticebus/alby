@@ -8,9 +8,6 @@
 #define CPU_STACK_SIZE 512
 #endif // !CPU_STACK_SIZE
 
-typedef uint64_t Word;
-#define CPU_ARCHITECTURE (sizeof(Word) * 8)
-
 typedef struct CpuInstruction CpuInstruction;
 
 typedef enum CpuOp {

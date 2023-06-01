@@ -6,8 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../interpreter/cpu/cpu.h"
-#include "../interpreter/cpu/cpu_inst.h"
+#include "cpu/cpu.h"
+#include "cpu/cpu_instructions.h"
 
 int alby_vm(const char *filename) {
   FILE *input = fopen(filename, "rb");
@@ -17,9 +17,12 @@ int alby_vm(const char *filename) {
     exit(1);
   }
 
+  Cpu cpu = {0};
+  fread(&cpu, sizeof(Cpu), 1, input);
+
   fseek(input, 0, SEEK_END);
-  const size_t file_size = (size_t)ftell(input);
-  fseek(input, 0, SEEK_SET);
+  const size_t file_size = (size_t)ftell(input) - sizeof(Cpu);
+  fseek(input, sizeof(Cpu), SEEK_SET);
 
   assert(file_size % sizeof(CpuInstruction) == 0); // TODO: real runtime checks
   const size_t program_size = file_size / sizeof(CpuInstruction);
@@ -38,6 +41,5 @@ int alby_vm(const char *filename) {
 
   fclose(input);
 
-  Cpu cpu = {0};
   return cpu_run_program(&cpu, program, program_size);
 }
